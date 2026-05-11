@@ -14,12 +14,13 @@
     --accent: #00ffe7;
     --accent2: #ff6b35;
     --accent3: #7b2fff;
+    --accentY: #ffcc00;
     --dim: #1a2a3a;
     --text: #c8e0f0;
     --textdim: #4a6a7a;
     --grid: rgba(0,255,231,0.04);
     --glow: 0 0 20px rgba(0,255,231,0.3);
-    --glow2: 0 0 20px rgba(255,107,53,0.4);
+    --glow3: 0 0 10px rgba(123,47,255,0.5);
   }
 
   * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; user-select:none; }
@@ -28,7 +29,6 @@
     background: var(--bg);
     color: var(--text);
     font-family: 'Share Tech Mono', monospace;
-    min-height: 100dvh;
     overflow: hidden;
     position: fixed; width:100%; height:100%;
     background-image:
@@ -36,200 +36,186 @@
       linear-gradient(90deg, var(--grid) 1px, transparent 1px);
     background-size: 40px 40px;
   }
-
-  /* SCANLINES */
   body::before {
-    content:'';
-    position:fixed; inset:0; z-index:999; pointer-events:none;
+    content:''; position:fixed; inset:0; z-index:999; pointer-events:none;
     background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px);
   }
 
-  /* PERMISSION SCREEN */
+  /* ── PERMISSION ── */
   #permission-screen {
     position:fixed; inset:0; z-index:100;
     display:flex; flex-direction:column; align-items:center; justify-content:center; gap:32px;
     background: var(--bg);
-    background-image:
-      linear-gradient(var(--grid) 1px, transparent 1px),
-      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
     background-size: 40px 40px;
   }
   #permission-screen h1 {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 42px; font-weight:900;
-    color: var(--accent);
-    text-shadow: var(--glow);
-    letter-spacing: 8px;
+    font-family:'Orbitron',sans-serif; font-size:42px; font-weight:900;
+    color:var(--accent); text-shadow:var(--glow); letter-spacing:8px;
     animation: pulse 2s ease-in-out infinite;
   }
-  #permission-screen p { color: var(--textdim); font-size:14px; text-align:center; max-width:280px; line-height:1.8; }
+  #permission-screen p { color:var(--textdim); font-size:14px; text-align:center; max-width:300px; line-height:1.8; }
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
-
   .btn-permit {
-    background: transparent;
-    border: 1px solid var(--accent);
-    color: var(--accent);
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 16px;
-    padding: 16px 48px;
-    letter-spacing: 4px;
-    cursor: pointer;
+    background:transparent; border:1px solid var(--accent); color:var(--accent);
+    font-family:'Share Tech Mono',monospace; font-size:16px; padding:16px 48px;
+    letter-spacing:4px; cursor:pointer;
     box-shadow: var(--glow), inset 0 0 20px rgba(0,255,231,0.05);
-    transition: all 0.2s;
-    text-transform: uppercase;
+    transition:all .2s;
   }
-  .btn-permit:active { background: rgba(0,255,231,0.1); transform: scale(0.97); }
+  .btn-permit:active { background:rgba(0,255,231,0.1); transform:scale(0.97); }
 
-  /* MAIN APP */
+  /* ── APP ── */
   #app { position:fixed; inset:0; display:flex; flex-direction:column; }
 
   /* HEADER */
   #header {
     display:flex; align-items:center; justify-content:space-between;
-    padding: 12px 20px;
-    border-bottom: 1px solid var(--dim);
-    flex-shrink:0;
+    padding:10px 18px; border-bottom:1px solid var(--dim); flex-shrink:0;
   }
-  #logo {
-    font-family:'Orbitron',sans-serif; font-size:18px; font-weight:900;
-    color:var(--accent); letter-spacing:4px; text-shadow: var(--glow);
-  }
-  #logo span { color: var(--accent2); }
-
-  .mode-toggle {
-    display:flex; gap:0;
-    border: 1px solid var(--dim); border-radius:4px; overflow:hidden;
-  }
-  .mode-btn {
-    background:transparent; border:none; color:var(--textdim);
-    font-family:'Share Tech Mono',monospace; font-size:11px;
-    padding:8px 16px; cursor:pointer; letter-spacing:2px;
-    transition: all 0.2s;
-  }
+  #logo { font-family:'Orbitron',sans-serif; font-size:17px; font-weight:900; color:var(--accent); letter-spacing:4px; text-shadow:var(--glow); }
+  #logo span { color:var(--accent2); }
+  .mode-toggle { display:flex; border:1px solid var(--dim); border-radius:4px; overflow:hidden; }
+  .mode-btn { background:transparent; border:none; color:var(--textdim); font-family:'Share Tech Mono',monospace; font-size:10px; padding:7px 14px; cursor:pointer; letter-spacing:2px; transition:all .2s; }
   .mode-btn.active { background:var(--accent); color:var(--bg); font-weight:bold; }
 
-  /* OSCILLOSCOPE */
-  #scope-wrap {
-    flex: 1; position:relative; overflow:hidden;
-    border-bottom: 1px solid var(--dim);
+  /* SCOPE */
+  #scope-wrap { flex:1; position:relative; overflow:hidden; border-bottom:1px solid var(--dim); min-height:0; }
+  #scope { width:100%; height:100%; display:block; }
+  #scope-label { position:absolute; top:6px; left:14px; font-size:9px; color:var(--textdim); letter-spacing:2px; }
+  #lfo-indicator {
+    position:absolute; top:6px; right:14px; font-size:9px; color:var(--accent3); letter-spacing:2px;
+    display:flex; align-items:center; gap:6px;
   }
-  #scope {
-    width:100%; height:100%;
-    display:block;
-  }
-  #scope-label {
-    position:absolute; top:8px; left:16px;
-    font-size:10px; color:var(--textdim); letter-spacing:2px;
-  }
+  #lfo-dot { width:7px; height:7px; border-radius:50%; background:var(--dim); transition:background .3s; }
+  #lfo-dot.active { background:var(--accent3); box-shadow:var(--glow3); animation:lfopulse 1s ease-in-out infinite; }
+  @keyframes lfopulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
-  /* GYRO DISPLAY */
-  #gyro-bar {
-    display:grid; grid-template-columns:1fr 1fr 1fr 1fr;
-    gap:1px; background:var(--dim);
-    flex-shrink:0;
-  }
-  .gyro-cell {
-    background:var(--bg2);
-    padding:8px 10px;
-    display:flex; flex-direction:column; gap:4px;
-  }
-  .gyro-label { font-size:9px; color:var(--textdim); letter-spacing:2px; }
-  .gyro-value { font-size:14px; color:var(--accent); font-family:'Orbitron',sans-serif; }
-  .gyro-bar-track {
-    height:3px; background:var(--dim); border-radius:2px; overflow:hidden;
-  }
-  .gyro-bar-fill {
-    height:100%; border-radius:2px; transition: width 0.05s;
-    background: var(--accent);
-  }
-  .gyro-cell:nth-child(2) .gyro-value { color:var(--accent2); }
-  .gyro-cell:nth-child(2) .gyro-bar-fill { background:var(--accent2); }
-  .gyro-cell:nth-child(3) .gyro-value { color:var(--accent3); }
-  .gyro-cell:nth-child(3) .gyro-bar-fill { background:var(--accent3); }
-  .gyro-cell:nth-child(4) .gyro-value { color:#ffcc00; }
-  .gyro-cell:nth-child(4) .gyro-bar-fill { background:#ffcc00; }
+  /* GYRO BAR */
+  #gyro-bar { display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:1px; background:var(--dim); flex-shrink:0; }
+  .gyro-cell { background:var(--bg2); padding:7px 10px; display:flex; flex-direction:column; gap:3px; }
+  .gyro-label { font-size:9px; color:var(--textdim); letter-spacing:1px; }
+  .gyro-value { font-size:13px; font-family:'Orbitron',sans-serif; }
+  .gv1{color:var(--accent);} .gv2{color:var(--accent2);} .gv3{color:var(--accent3);} .gv4{color:var(--accentY);}
+  .gyro-bar-track { height:3px; background:var(--dim); border-radius:2px; overflow:hidden; }
+  .gyro-bar-fill { height:100%; border-radius:2px; transition:width .05s; }
+  .gbf1{background:var(--accent);} .gbf2{background:var(--accent2);} .gbf3{background:var(--accent3);} .gbf4{background:var(--accentY);}
 
-  /* CONTROLS */
+  /* WAVEFORM CONTROLS */
   #controls {
-    padding:10px 16px;
-    display:flex; gap:12px; align-items:center; flex-wrap:wrap;
+    padding:8px 14px; display:flex; gap:10px; align-items:center; flex-wrap:wrap;
     border-bottom:1px solid var(--dim); flex-shrink:0;
   }
-  .ctrl-group { display:flex; flex-direction:column; gap:4px; }
+  .ctrl-group { display:flex; flex-direction:column; gap:3px; }
   .ctrl-label { font-size:9px; color:var(--textdim); letter-spacing:2px; }
-
-  .wave-buttons { display:flex; gap:6px; }
+  .wave-buttons { display:flex; gap:5px; }
   .wave-btn {
-    background:transparent; border:1px solid var(--dim);
-    color:var(--textdim); font-family:'Share Tech Mono',monospace;
-    font-size:10px; padding:6px 10px; cursor:pointer; letter-spacing:1px;
-    transition:all 0.15s; border-radius:2px;
+    background:transparent; border:1px solid var(--dim); color:var(--textdim);
+    font-family:'Share Tech Mono',monospace; font-size:10px; padding:5px 9px;
+    cursor:pointer; letter-spacing:1px; transition:all .15s; border-radius:2px;
   }
-  .wave-btn.active {
-    border-color:var(--accent); color:var(--accent);
-    box-shadow: 0 0 8px rgba(0,255,231,0.2);
-  }
-  .wave-btn svg { display:block; }
+  .wave-btn.active { border-color:var(--accent); color:var(--accent); box-shadow:0 0 8px rgba(0,255,231,0.2); }
 
-  /* PADS */
+  /* ── LFO PANEL ── */
+  #lfo-panel {
+    padding:8px 14px; display:flex; gap:14px; align-items:center; flex-wrap:wrap;
+    border-bottom:1px solid var(--dim); flex-shrink:0;
+    background:rgba(123,47,255,0.04);
+    border-left:2px solid transparent;
+    transition:border-color .3s;
+  }
+  #lfo-panel.lfo-active { border-left-color:var(--accent3); }
+  .lfo-main-label { font-family:'Orbitron',sans-serif; font-size:10px; color:var(--accent3); letter-spacing:3px; flex-shrink:0; }
+
+  #lfo-toggle {
+    background:transparent; border:1px solid var(--dim); color:var(--textdim);
+    font-family:'Share Tech Mono',monospace; font-size:10px; padding:5px 12px;
+    cursor:pointer; letter-spacing:2px; border-radius:2px; transition:all .2s; flex-shrink:0;
+  }
+  #lfo-toggle.on { border-color:var(--accent3); color:var(--accent3); box-shadow:var(--glow3); }
+
+  .lfo-sbtn, .lfo-tbtn {
+    background:transparent; border:1px solid var(--dim); color:var(--textdim);
+    font-family:'Share Tech Mono',monospace; font-size:9px; padding:4px 8px;
+    cursor:pointer; border-radius:2px; transition:all .15s; letter-spacing:1px;
+  }
+  .lfo-sbtn.active,.lfo-tbtn.active { border-color:var(--accent3); color:var(--accent3); box-shadow:0 0 6px rgba(123,47,255,0.3); }
+
+  .lfo-row { display:flex; align-items:center; gap:7px; }
+  .lfo-sub { font-size:9px; color:var(--textdim); letter-spacing:1px; white-space:nowrap; }
+  .lfo-val { font-size:10px; color:var(--accent3); min-width:40px; text-align:right; font-family:'Orbitron',sans-serif; }
+
+  input[type=range].lfo-range {
+    -webkit-appearance:none; appearance:none; height:3px; border-radius:2px; outline:none; cursor:pointer;
+    background:linear-gradient(to right, var(--accent3) 0%, var(--accent3) var(--pct,0%), var(--dim) var(--pct,0%));
+  }
+  input[type=range].lfo-range::-webkit-slider-thumb {
+    -webkit-appearance:none; width:14px; height:14px; border-radius:50%;
+    background:var(--accent3); border:2px solid var(--bg); box-shadow:var(--glow3);
+  }
+
+  /* ── PADS ── */
   #pads {
     flex:1; display:grid; grid-template-columns:repeat(4,1fr); grid-template-rows:repeat(3,1fr);
     gap:4px; padding:8px; overflow:hidden;
   }
   .pad {
-    background: var(--bg3);
-    border: 1px solid var(--dim);
-    border-radius:6px;
+    background:var(--bg3); border:1px solid var(--dim); border-radius:6px;
     display:flex; flex-direction:column; align-items:center; justify-content:center;
-    cursor:pointer; transition:all 0.1s;
+    cursor:pointer; transition:border-color .12s, box-shadow .12s, background .12s;
     position:relative; overflow:hidden;
   }
+  /* glow fill — always present, opacity driven by .on */
   .pad::before {
     content:''; position:absolute; inset:0;
-    background: radial-gradient(circle at center, rgba(0,255,231,0.15) 0%, transparent 70%);
-    opacity:0; transition:opacity 0.1s;
+    background:radial-gradient(circle at center, rgba(0,255,231,0.18) 0%, transparent 70%);
+    opacity:0; transition:opacity .15s;
   }
-  .pad.active { border-color:var(--accent); box-shadow: var(--glow); }
-  .pad.active::before { opacity:1; }
-  .pad-note { font-family:'Orbitron',sans-serif; font-size:14px; color:var(--accent); }
-  .pad-freq { font-size:9px; color:var(--textdim); margin-top:2px; }
+  /* tap flash */
+  .pad::after {
+    content:''; position:absolute; inset:0; border-radius:6px;
+    background:rgba(0,255,231,0.1); opacity:0;
+    transition:opacity .12s;
+  }
+  .pad.tap::after { opacity:1; }
 
-  /* THEREMIN */
-  #theremin {
-    flex:1; position:relative; overflow:hidden;
-    display:none;
-    background: radial-gradient(ellipse at center, rgba(0,255,231,0.03) 0%, transparent 70%);
+  .pad.on {
+    border-color:var(--accent);
+    box-shadow:var(--glow), inset 0 0 12px rgba(0,255,231,0.06);
+    background:rgba(0,255,231,0.04);
   }
+  .pad.on::before { opacity:1; }
+
+  .pad-led {
+    position:absolute; top:6px; right:7px;
+    width:6px; height:6px; border-radius:50%;
+    background:var(--dim); transition:background .12s, box-shadow .12s;
+  }
+  .pad.on .pad-led { background:var(--accent); box-shadow:0 0 6px var(--accent); }
+
+  .pad-note { font-family:'Orbitron',sans-serif; font-size:14px; color:var(--textdim); transition:color .12s; z-index:1; }
+  .pad.on .pad-note { color:var(--accent); text-shadow:0 0 10px rgba(0,255,231,0.6); }
+  .pad-freq { font-size:9px; color:var(--textdim); margin-top:3px; z-index:1; }
+
+  /* ── THEREMIN ── */
+  #theremin { flex:1; position:relative; overflow:hidden; display:none; }
   #theremin-field {
-    position:absolute; inset:16px;
-    border:1px solid var(--dim); border-radius:8px;
+    position:absolute; inset:16px; border:1px solid var(--dim); border-radius:8px;
     display:flex; align-items:center; justify-content:center;
+    background:radial-gradient(ellipse at center, rgba(0,255,231,0.03) 0%, transparent 70%);
   }
-  #theremin-hint { color:var(--textdim); font-size:13px; text-align:center; line-height:2; }
+  #theremin-hint { color:var(--textdim); font-size:13px; text-align:center; line-height:2.2; }
   #theremin-cursor {
-    position:absolute; width:40px; height:40px;
-    border-radius:50%; pointer-events:none;
-    border:2px solid var(--accent);
-    box-shadow: var(--glow);
-    transform:translate(-50%,-50%);
-    display:none;
-    transition: left 0.05s, top 0.05s;
+    position:absolute; width:40px; height:40px; border-radius:50%; pointer-events:none;
+    border:2px solid var(--accent); box-shadow:var(--glow); transform:translate(-50%,-50%); display:none;
   }
-  #theremin-cursor::after {
-    content:''; position:absolute; inset:8px;
-    border-radius:50%; background:var(--accent);
-    opacity:0.6;
-  }
+  #theremin-cursor::after { content:''; position:absolute; inset:8px; border-radius:50%; background:var(--accent); opacity:0.6; }
   #pitch-axis { position:absolute; bottom:24px; left:0; right:0; text-align:center; font-size:9px; color:var(--textdim); letter-spacing:2px; }
   #amp-axis { position:absolute; left:24px; top:0; bottom:0; display:flex; align-items:center; }
   #amp-axis span { font-size:9px; color:var(--textdim); letter-spacing:2px; writing-mode:vertical-rl; transform:rotate(180deg); }
 
-  /* SHAKE indicator */
-  #shake-flash {
-    position:fixed; inset:0; pointer-events:none; z-index:500;
-    background: radial-gradient(ellipse at center, rgba(123,47,255,0.3) 0%, transparent 70%);
-    opacity:0; transition:opacity 0.1s;
-  }
+  /* SHAKE */
+  #shake-flash { position:fixed; inset:0; pointer-events:none; z-index:500; background:radial-gradient(ellipse at center, rgba(123,47,255,0.3) 0%, transparent 70%); opacity:0; transition:opacity .1s; }
   #shake-flash.active { opacity:1; }
 </style>
 </head>
@@ -243,9 +229,9 @@
     <div style="font-family:Orbitron,sans-serif;font-size:11px;letter-spacing:6px;color:var(--textdim);margin-bottom:12px">MOTION SYNTHESIZER</div>
     <h1>GYRO<span>SYNTH</span></h1>
   </div>
-  <p>Für die Gyro-Steuerung braucht diese App Zugriff auf deine Gerätesensoren.</p>
+  <p>Für die Gyro-Steuerung braucht diese App Zugriff auf deine Gerätesensoren.<br>Pads können auch ohne Gyro gespielt werden.</p>
   <button class="btn-permit" id="permit-btn">[ STARTEN ]</button>
-  <p style="font-size:11px;color:var(--textdim)">Neigung → Pitch · Amplitude · Distortion</p>
+  <p style="font-size:11px;color:var(--textdim)">Neigung → Pitch · Amplitude · Distortion · Reverb</p>
 </div>
 
 <!-- APP -->
@@ -254,54 +240,102 @@
   <div id="header">
     <div id="logo">GYRO<span>SYNTH</span></div>
     <div class="mode-toggle">
-      <button class="mode-btn active" id="btn-pads" onclick="setMode('pads')">PADS</button>
-      <button class="mode-btn" id="btn-theremin" onclick="setMode('theremin')">THEREMIN</button>
+      <button class="mode-btn active" id="btn-pads"     onclick="setMode('pads')">PADS</button>
+      <button class="mode-btn"        id="btn-theremin" onclick="setMode('theremin')">THEREMIN</button>
     </div>
   </div>
 
   <div id="scope-wrap">
     <canvas id="scope"></canvas>
     <div id="scope-label">OSCILLOSCOPE</div>
+    <div id="lfo-indicator">
+      <div id="lfo-dot"></div>
+      <span id="lfo-ind-label">LFO OFF</span>
+    </div>
   </div>
 
   <div id="gyro-bar">
     <div class="gyro-cell">
       <div class="gyro-label">PITCH (↑↓)</div>
-      <div class="gyro-value" id="gv-pitch">0.00</div>
-      <div class="gyro-bar-track"><div class="gyro-bar-fill" id="gb-pitch" style="width:50%"></div></div>
+      <div class="gyro-value gv1" id="gv-pitch">0.0°</div>
+      <div class="gyro-bar-track"><div class="gyro-bar-fill gbf1" id="gb-pitch" style="width:50%"></div></div>
     </div>
     <div class="gyro-cell">
       <div class="gyro-label">AMP (←→)</div>
-      <div class="gyro-value" id="gv-amp">0.00</div>
-      <div class="gyro-bar-track"><div class="gyro-bar-fill" id="gb-amp" style="width:50%"></div></div>
+      <div class="gyro-value gv2" id="gv-amp">0.0°</div>
+      <div class="gyro-bar-track"><div class="gyro-bar-fill gbf2" id="gb-amp" style="width:50%"></div></div>
     </div>
     <div class="gyro-cell">
       <div class="gyro-label">DIST (↻)</div>
-      <div class="gyro-value" id="gv-dist">0.00</div>
-      <div class="gyro-bar-track"><div class="gyro-bar-fill" id="gb-dist" style="width:0%"></div></div>
+      <div class="gyro-value gv3" id="gv-dist">0.00</div>
+      <div class="gyro-bar-track"><div class="gyro-bar-fill gbf3" id="gb-dist" style="width:0%"></div></div>
     </div>
     <div class="gyro-cell">
       <div class="gyro-label">REVERB (⌇)</div>
-      <div class="gyro-value" id="gv-shake">0.00</div>
-      <div class="gyro-bar-track"><div class="gyro-bar-fill" id="gb-shake" style="width:0%"></div></div>
+      <div class="gyro-value gv4" id="gv-shake">0.00</div>
+      <div class="gyro-bar-track"><div class="gyro-bar-fill gbf4" id="gb-shake" style="width:0%"></div></div>
     </div>
   </div>
 
+  <!-- WAVEFORM -->
   <div id="controls">
     <div class="ctrl-group">
       <div class="ctrl-label">WAVEFORM</div>
       <div class="wave-buttons">
-        <button class="wave-btn active" onclick="setWave('sine')" id="w-sine">SIN</button>
-        <button class="wave-btn" onclick="setWave('sawtooth')" id="w-sawtooth">SAW</button>
-        <button class="wave-btn" onclick="setWave('square')" id="w-square">SQR</button>
-        <button class="wave-btn" onclick="setWave('triangle')" id="w-triangle">TRI</button>
-        <button class="wave-btn" onclick="setWave('noise')" id="w-noise">NSE</button>
+        <button class="wave-btn active" onclick="setWave('sine')"     id="w-sine">SIN</button>
+        <button class="wave-btn"        onclick="setWave('sawtooth')" id="w-sawtooth">SAW</button>
+        <button class="wave-btn"        onclick="setWave('square')"   id="w-square">SQR</button>
+        <button class="wave-btn"        onclick="setWave('triangle')" id="w-triangle">TRI</button>
+        <button class="wave-btn"        onclick="setWave('noise')"    id="w-noise">NSE</button>
       </div>
     </div>
     <div class="ctrl-group" style="margin-left:auto">
       <div class="ctrl-label">BASE PITCH</div>
-      <input type="range" id="base-pitch" min="100" max="800" value="220"
-        style="width:100px;accent-color:var(--accent)">
+      <input type="range" id="base-pitch" min="100" max="800" value="220" style="width:90px;accent-color:var(--accent)">
+    </div>
+  </div>
+
+  <!-- LFO -->
+  <div id="lfo-panel">
+    <div class="lfo-main-label">LFO</div>
+
+    <button id="lfo-toggle" onclick="toggleLFO()">OFF</button>
+
+    <div class="ctrl-group">
+      <div class="ctrl-label">SHAPE</div>
+      <div style="display:flex;gap:4px">
+        <button class="lfo-sbtn active" onclick="setLFOShape('sine')"     id="ls-sine">SIN</button>
+        <button class="lfo-sbtn"        onclick="setLFOShape('square')"   id="ls-square">SQR</button>
+        <button class="lfo-sbtn"        onclick="setLFOShape('triangle')" id="ls-triangle">TRI</button>
+        <button class="lfo-sbtn"        onclick="setLFOShape('sawtooth')" id="ls-sawtooth">SAW</button>
+      </div>
+    </div>
+
+    <div class="ctrl-group">
+      <div class="lfo-row">
+        <span class="lfo-sub">RATE</span>
+        <input type="range" class="lfo-range" id="lfo-rate" min="0.05" max="20" step="0.05" value="1"
+          style="width:75px" oninput="updateLFOSliders()">
+        <span class="lfo-val" id="lfo-rate-val">1.0 Hz</span>
+      </div>
+    </div>
+
+    <div class="ctrl-group">
+      <div class="lfo-row">
+        <span class="lfo-sub">DEPTH</span>
+        <input type="range" class="lfo-range" id="lfo-depth" min="0" max="1" step="0.01" value="0.5"
+          style="width:75px" oninput="updateLFOSliders()">
+        <span class="lfo-val" id="lfo-depth-val">50%</span>
+      </div>
+    </div>
+
+    <div class="ctrl-group">
+      <div class="ctrl-label">TARGET</div>
+      <div style="display:flex;gap:4px">
+        <button class="lfo-tbtn active" onclick="setLFOTarget('pitch')" id="lt-pitch">PITCH</button>
+        <button class="lfo-tbtn"        onclick="setLFOTarget('amp')"   id="lt-amp">AMP</button>
+        <button class="lfo-tbtn"        onclick="setLFOTarget('both')"  id="lt-both">BOTH</button>
+      </div>
     </div>
   </div>
 
@@ -312,29 +346,34 @@
       <div id="theremin-hint">TOUCH UND NEIGE DAS GERÄT<br><span style="font-size:11px;color:var(--textdim)">Links↔Rechts = Amplitude &nbsp;·&nbsp; Vor↕Zurück = Pitch</span></div>
     </div>
     <div id="theremin-cursor"></div>
-    <div id="pitch-axis">← TIEF &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; PITCH &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; HOCH →</div>
+    <div id="pitch-axis">← TIEF &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; PITCH &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; HOCH →</div>
     <div id="amp-axis"><span>LAUT ↑ · LEISE ↓</span></div>
   </div>
 
 </div>
 
 <script>
-// ─── AUDIO ENGINE ───────────────────────────────────────────────────────────
-let ctx, masterGain, distNode, distGain, reverbGain, reverbConvolver, analyser;
+// ══════════════════════════════════════════════════════════
+// AUDIO ENGINE
+// ══════════════════════════════════════════════════════════
+let ctx, masterGain, distNode, reverbConvolver, reverbGain, analyser;
 let oscillators = {};
-let noiseNodes = {};
+let noiseNodes  = {};
 let currentWave = 'sine';
 let currentMode = 'pads';
-let gyroEnabled = false;
 
 // Gyro state
-let pitchBend = 0;   // beta  -90..90
-let ampMod = 0;      // gamma -90..90
-let distMod = 0;     // alpha 0..360
-let shakeMod = 0;
-
-// Smooth
 let sBeta=0, sGamma=0, sAlpha=0;
+let pitchBend=0, distMod=0, shakeMod=0;
+let lastAcc={x:0,y:0,z:0};
+
+// LFO state
+let lfoOsc=null, lfoGainNode=null;
+let lfoOn=false, lfoShape='sine', lfoTarget='pitch';
+let lfoPhase=0;
+
+// Pad toggle state
+const padState = {};
 
 const NOTES = [
   {note:'C3', freq:130.81}, {note:'D3', freq:146.83}, {note:'E3', freq:164.81}, {note:'F3', freq:174.61},
@@ -342,6 +381,7 @@ const NOTES = [
   {note:'D4', freq:293.66}, {note:'E4', freq:329.63}, {note:'F4', freq:349.23}, {note:'G4', freq:392.00}
 ];
 
+// ── initAudio ──────────────────────────────────────────────
 function initAudio() {
   ctx = new (window.AudioContext || window.webkitAudioContext)();
 
@@ -351,20 +391,14 @@ function initAudio() {
   masterGain = ctx.createGain();
   masterGain.gain.value = 0.7;
 
-  // Distortion
   distNode = ctx.createWaveShaper();
-  distGain = ctx.createGain();
-  distGain.gain.value = 0;
   setDistortion(0);
 
-  // Reverb (simple convolver)
   reverbConvolver = ctx.createConvolver();
   reverbGain = ctx.createGain();
   reverbGain.gain.value = 0;
-  const reverbBuf = makeReverb(ctx, 2.5);
-  reverbConvolver.buffer = reverbBuf;
+  reverbConvolver.buffer = makeReverb(2.5);
 
-  // Chain: osc → distNode → masterGain → analyser → reverb → out
   distNode.connect(masterGain);
   masterGain.connect(analyser);
   analyser.connect(ctx.destination);
@@ -373,37 +407,105 @@ function initAudio() {
   reverbGain.connect(ctx.destination);
 }
 
-function makeReverb(ctx, duration) {
-  const sr = ctx.sampleRate;
-  const len = sr * duration;
-  const buf = ctx.createBuffer(2, len, sr);
-  for (let c=0; c<2; c++) {
-    const d = buf.getChannelData(c);
-    for (let i=0; i<len; i++) {
-      d[i] = (Math.random()*2-1) * Math.pow(1-i/len, 2.5);
+// ── LFO ────────────────────────────────────────────────────
+function buildLFO() {
+  // Tear down existing LFO
+  if (lfoOsc) { try { lfoOsc.stop(); } catch(e){} lfoOsc=null; }
+  if (!lfoOn || !ctx) return;
+
+  lfoOsc      = ctx.createOscillator();
+  lfoGainNode = ctx.createGain();
+
+  lfoOsc.type = lfoShape;
+  lfoOsc.frequency.value = parseFloat(document.getElementById('lfo-rate').value);
+  lfoGainNode.gain.value = parseFloat(document.getElementById('lfo-depth').value);
+  lfoOsc.connect(lfoGainNode);
+
+  // Connect to pitch of all running oscillators
+  if (lfoTarget === 'pitch' || lfoTarget === 'both') {
+    for (const id in oscillators) {
+      const {osc, baseFreq} = oscillators[id];
+      const pd = ctx.createGain();
+      pd.gain.value = baseFreq * 0.07; // ~1 semitone swing at depth=1
+      lfoGainNode.connect(pd);
+      pd.connect(osc.frequency);
     }
   }
-  return buf;
+
+  // Connect to amplitude (masterGain.gain)
+  if (lfoTarget === 'amp' || lfoTarget === 'both') {
+    const ampScale = ctx.createGain();
+    ampScale.gain.value = 0.25;
+    lfoGainNode.connect(ampScale);
+    ampScale.connect(masterGain.gain);
+  }
+
+  lfoOsc.start();
 }
 
+function toggleLFO() {
+  lfoOn = !lfoOn;
+  const btn = document.getElementById('lfo-toggle');
+  const dot = document.getElementById('lfo-dot');
+  btn.textContent = lfoOn ? 'ON' : 'OFF';
+  btn.classList.toggle('on', lfoOn);
+  dot.classList.toggle('active', lfoOn);
+  document.getElementById('lfo-panel').classList.toggle('lfo-active', lfoOn);
+  document.getElementById('lfo-ind-label').textContent = lfoOn ? 'LFO ' + lfoShape.toUpperCase() : 'LFO OFF';
+  buildLFO();
+}
+
+function setLFOShape(s) {
+  lfoShape = s;
+  document.querySelectorAll('.lfo-sbtn').forEach(b => b.classList.remove('active'));
+  document.getElementById('ls-'+s).classList.add('active');
+  document.getElementById('lfo-ind-label').textContent = lfoOn ? 'LFO ' + s.toUpperCase() : 'LFO OFF';
+  if (lfoOsc) lfoOsc.type = s;
+}
+
+function setLFOTarget(t) {
+  lfoTarget = t;
+  document.querySelectorAll('.lfo-tbtn').forEach(b => b.classList.remove('active'));
+  document.getElementById('lt-'+t).classList.add('active');
+  if (lfoOn) buildLFO();
+}
+
+function updateLFOSliders() {
+  const rate  = parseFloat(document.getElementById('lfo-rate').value);
+  const depth = parseFloat(document.getElementById('lfo-depth').value);
+  document.getElementById('lfo-rate-val').textContent  = rate.toFixed(2) + ' Hz';
+  document.getElementById('lfo-depth-val').textContent = Math.round(depth * 100) + '%';
+  // Update CSS fill on range track
+  const rEl = document.getElementById('lfo-rate');
+  rEl.style.setProperty('--pct', ((rate-0.05)/(20-0.05)*100).toFixed(1)+'%');
+  const dEl = document.getElementById('lfo-depth');
+  dEl.style.setProperty('--pct', (depth*100).toFixed(1)+'%');
+  // Live update if LFO running
+  if (lfoOsc) lfoOsc.frequency.setTargetAtTime(rate, ctx.currentTime, 0.05);
+  if (lfoGainNode) lfoGainNode.gain.setTargetAtTime(depth, ctx.currentTime, 0.05);
+}
+
+// ── Audio helpers ──────────────────────────────────────────
 function setDistortion(amount) {
-  const k = amount * 400;
-  const n = 256;
-  const curve = new Float32Array(n);
-  for (let i=0; i<n; i++) {
-    const x = (i*2/n)-1;
-    curve[i] = (Math.PI+k)*x / (Math.PI + k*Math.abs(x));
-  }
+  const k=amount*400, n=256, curve=new Float32Array(n);
+  for(let i=0;i<n;i++){const x=(i*2/n)-1; curve[i]=(Math.PI+k)*x/(Math.PI+k*Math.abs(x));}
   distNode.curve = curve;
 }
 
-function makeNoiseBuffer() {
-  const buf = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate);
-  const d = buf.getChannelData(0);
-  for (let i=0; i<d.length; i++) d[i] = Math.random()*2-1;
+function makeReverb(dur) {
+  const sr=ctx.sampleRate, len=sr*dur;
+  const buf=ctx.createBuffer(2,len,sr);
+  for(let c=0;c<2;c++){const d=buf.getChannelData(c); for(let i=0;i<len;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/len,2.5);}
   return buf;
 }
 
+function makeNoiseBuffer() {
+  const buf=ctx.createBuffer(1,ctx.sampleRate,ctx.sampleRate);
+  const d=buf.getChannelData(0); for(let i=0;i<d.length;i++) d[i]=Math.random()*2-1;
+  return buf;
+}
+
+// ── Note on/off ────────────────────────────────────────────
 function startNote(id, baseFreq) {
   if (oscillators[id] || noiseNodes[id]) return;
   if (!ctx) return;
@@ -411,23 +513,27 @@ function startNote(id, baseFreq) {
 
   const g = ctx.createGain();
   g.gain.setValueAtTime(0, ctx.currentTime);
-  g.gain.linearRampToValueAtTime(0.4, ctx.currentTime + 0.02);
+  g.gain.linearRampToValueAtTime(0.35, ctx.currentTime + 0.025);
   g.connect(distNode);
 
   if (currentWave === 'noise') {
     const src = ctx.createBufferSource();
-    src.buffer = makeNoiseBuffer();
-    src.loop = true;
-    src.connect(g);
-    src.start();
-    noiseNodes[id] = { src, g };
+    src.buffer = makeNoiseBuffer(); src.loop = true;
+    src.connect(g); src.start();
+    noiseNodes[id] = {src, g};
   } else {
     const osc = ctx.createOscillator();
     osc.type = currentWave;
     osc.frequency.value = baseFreq;
-    osc.connect(g);
-    osc.start();
-    oscillators[id] = { osc, g, baseFreq };
+    // Wire LFO pitch if active
+    if (lfoOn && lfoGainNode && (lfoTarget==='pitch'||lfoTarget==='both')) {
+      const pd = ctx.createGain();
+      pd.gain.value = baseFreq * 0.07;
+      lfoGainNode.connect(pd);
+      pd.connect(osc.frequency);
+    }
+    osc.connect(g); osc.start();
+    oscillators[id] = {osc, g, baseFreq};
   }
 }
 
@@ -435,263 +541,236 @@ function stopNote(id) {
   if (oscillators[id]) {
     const {osc, g} = oscillators[id];
     g.gain.setValueAtTime(g.gain.value, ctx.currentTime);
-    g.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.1);
-    setTimeout(()=>{ try{osc.stop()}catch(e){} }, 200);
+    g.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.15);
+    setTimeout(()=>{try{osc.stop()}catch(e){}}, 300);
     delete oscillators[id];
   }
   if (noiseNodes[id]) {
     const {src, g} = noiseNodes[id];
     g.gain.setValueAtTime(g.gain.value, ctx.currentTime);
-    g.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.1);
-    setTimeout(()=>{ try{src.stop()}catch(e){} }, 200);
+    g.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.15);
+    setTimeout(()=>{try{src.stop()}catch(e){}}, 300);
     delete noiseNodes[id];
   }
 }
 
-// ─── GYRO ───────────────────────────────────────────────────────────────────
-let lastAcc = {x:0,y:0,z:0};
+// ══════════════════════════════════════════════════════════
+// PADS — toggle on/off per click
+// ══════════════════════════════════════════════════════════
+function buildPads() {
+  const grid = document.getElementById('pads');
+  grid.innerHTML = '';
 
+  NOTES.forEach((n, i) => {
+    const id = 'pad-' + i;
+    padState[id] = false;
+
+    const pad = document.createElement('div');
+    pad.className = 'pad';
+    pad.id = id;
+    pad.innerHTML = `
+      <div class="pad-led"></div>
+      <div class="pad-note">${n.note}</div>
+      <div class="pad-freq">${n.freq} Hz</div>`;
+
+    const toggle = (e) => {
+      e.preventDefault();
+      // tap flash
+      pad.classList.remove('tap');
+      void pad.offsetWidth; // reflow to restart animation
+      pad.classList.add('tap');
+
+      padState[id] = !padState[id];
+      if (padState[id]) {
+        startNote(id, n.freq);
+        pad.classList.add('on');
+      } else {
+        stopNote(id);
+        pad.classList.remove('on');
+      }
+    };
+
+    // Both touch (iPad) and click (desktop) supported
+    pad.addEventListener('touchend', toggle, {passive:false});
+    pad.addEventListener('click',    toggle);
+    grid.appendChild(pad);
+  });
+}
+
+// ══════════════════════════════════════════════════════════
+// GYRO
+// ══════════════════════════════════════════════════════════
 function initGyro() {
   window.addEventListener('deviceorientation', (e) => {
-    const beta  = e.beta  || 0;  // -180..180, vor/zurück
-    const gamma = e.gamma || 0;  // -90..90, links/rechts
-    const alpha = e.alpha || 0;  // 0..360, rotation
+    const beta  = e.beta  || 0;
+    const gamma = e.gamma || 0;
+    const alpha = e.alpha || 0;
 
     sBeta  += (beta  - sBeta)  * 0.15;
     sGamma += (gamma - sGamma) * 0.15;
     sAlpha += (alpha - sAlpha) * 0.05;
 
-    // Pitch: beta -90..90 → pitch multiplier 0.5..2.0
     pitchBend = Math.max(-90, Math.min(90, sBeta));
-    const pitchMult = Math.pow(2, pitchBend/90);
+    const pitchMult = Math.pow(2, pitchBend / 90);
+    const ampMod    = Math.max(0.05, Math.min(1, (sGamma + 90) / 180));
+    distMod         = Math.min(1, Math.abs(sAlpha - 180) / 180);
 
-    // Amplitude: gamma -90..90 → 0..1
-    ampMod = Math.max(0, Math.min(1, (sGamma + 90) / 180));
-
-    // Distortion: alpha 0..360 → 0..1
-    distMod = Math.min(1, Math.abs(sAlpha - 180) / 180);
-
-    // Apply to active oscillators
     for (const id in oscillators) {
       const {osc, g, baseFreq} = oscillators[id];
       osc.frequency.setTargetAtTime(baseFreq * pitchMult, ctx.currentTime, 0.05);
-      g.gain.setTargetAtTime(ampMod * 0.5, ctx.currentTime, 0.05);
-    }
-    for (const id in noiseNodes) {
-      const {g} = noiseNodes[id];
       g.gain.setTargetAtTime(ampMod * 0.4, ctx.currentTime, 0.05);
     }
-
-    // Distortion
+    for (const id in noiseNodes) {
+      noiseNodes[id].g.gain.setTargetAtTime(ampMod * 0.35, ctx.currentTime, 0.05);
+    }
     setDistortion(distMod);
-    distGain.gain.setTargetAtTime(distMod * 0.5, ctx.currentTime, 0.1);
+    masterGain.gain.setTargetAtTime(0.4 + ampMod * 0.6, ctx.currentTime, 0.05);
 
-    // Master amp via gyro
-    if (masterGain) masterGain.gain.setTargetAtTime(0.4 + ampMod*0.6, ctx.currentTime, 0.05);
-
-    // Update UI
-    const pb = ((pitchBend+90)/180*100).toFixed(0);
-    const db = (distMod*100).toFixed(0);
-    document.getElementById('gv-pitch').textContent = pitchBend.toFixed(1)+'°';
-    document.getElementById('gv-amp').textContent   = sGamma.toFixed(1)+'°';
+    document.getElementById('gv-pitch').textContent = pitchBend.toFixed(1) + '°';
+    document.getElementById('gv-amp').textContent   = sGamma.toFixed(1) + '°';
     document.getElementById('gv-dist').textContent  = distMod.toFixed(2);
-    document.getElementById('gb-pitch').style.width = pb+'%';
-    document.getElementById('gb-amp').style.width   = ((sGamma+90)/180*100)+'%';
-    document.getElementById('gb-dist').style.width  = db+'%';
+    document.getElementById('gb-pitch').style.width = ((pitchBend+90)/180*100).toFixed(0) + '%';
+    document.getElementById('gb-amp').style.width   = ((sGamma+90)/180*100).toFixed(0) + '%';
+    document.getElementById('gb-dist').style.width  = (distMod*100).toFixed(0) + '%';
   });
 
   window.addEventListener('devicemotion', (e) => {
-    const acc = e.accelerationIncludingGravity;
-    if (!acc) return;
-    const dx = Math.abs(acc.x - lastAcc.x);
-    const dy = Math.abs(acc.y - lastAcc.y);
-    const dz = Math.abs(acc.z - lastAcc.z);
-    const shake = (dx+dy+dz);
-    lastAcc = {x:acc.x,y:acc.y,z:acc.z};
+    const acc = e.accelerationIncludingGravity; if (!acc) return;
+    const dx=Math.abs(acc.x-lastAcc.x), dy=Math.abs(acc.y-lastAcc.y), dz=Math.abs(acc.z-lastAcc.z);
+    const shake = dx+dy+dz;
+    lastAcc = {x:acc.x, y:acc.y, z:acc.z};
     if (shake > 8) {
       shakeMod = Math.min(1, shake/30);
-      reverbGain.gain.setTargetAtTime(shakeMod * 0.8, ctx.currentTime, 0.1);
+      reverbGain.gain.setTargetAtTime(shakeMod*0.8, ctx.currentTime, 0.1);
       document.getElementById('gv-shake').textContent = shakeMod.toFixed(2);
       document.getElementById('gb-shake').style.width = (shakeMod*100)+'%';
       document.getElementById('shake-flash').classList.add('active');
-      setTimeout(()=>document.getElementById('shake-flash').classList.remove('active'), 150);
-      // Decay reverb
       setTimeout(()=>{
-        if(reverbGain) reverbGain.gain.setTargetAtTime(0, ctx.currentTime, 0.5);
-        shakeMod = 0;
-        document.getElementById('gv-shake').textContent = '0.00';
-        document.getElementById('gb-shake').style.width = '0%';
-      }, 300);
+        document.getElementById('shake-flash').classList.remove('active');
+        reverbGain.gain.setTargetAtTime(0, ctx.currentTime, 0.5);
+        shakeMod=0;
+        document.getElementById('gv-shake').textContent='0.00';
+        document.getElementById('gb-shake').style.width='0%';
+      }, 350);
     }
   });
 }
 
-// ─── PADS ───────────────────────────────────────────────────────────────────
-function buildPads() {
-  const grid = document.getElementById('pads');
-  grid.innerHTML = '';
-  NOTES.forEach((n, i) => {
-    const pad = document.createElement('div');
-    pad.className = 'pad';
-    pad.id = 'pad-'+i;
-    pad.innerHTML = `<div class="pad-note">${n.note}</div><div class="pad-freq">${n.freq} Hz</div>`;
-
-    const start = () => { startNote('pad-'+i, n.freq); pad.classList.add('active'); };
-    const stop  = () => { stopNote('pad-'+i); pad.classList.remove('active'); };
-
-    pad.addEventListener('touchstart', (e)=>{ e.preventDefault(); start(); }, {passive:false});
-    pad.addEventListener('touchend',   (e)=>{ e.preventDefault(); stop();  }, {passive:false});
-    pad.addEventListener('mousedown',  start);
-    pad.addEventListener('mouseup',    stop);
-    pad.addEventListener('mouseleave', stop);
-    grid.appendChild(pad);
-  });
-}
-
-// ─── THEREMIN ───────────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════
+// THEREMIN
+// ══════════════════════════════════════════════════════════
 let thereminActive = false;
-
 function initTheremin() {
-  const field = document.getElementById('theremin-field');
+  const field  = document.getElementById('theremin-field');
   const cursor = document.getElementById('theremin-cursor');
-  const hint = document.getElementById('theremin-hint');
+  const hint   = document.getElementById('theremin-hint');
+  const ther   = document.getElementById('theremin');
 
-  const onTouch = (e) => {
-    e.preventDefault();
-    const t = e.touches[0];
+  const getFreq = (cx) => {
     const rect = field.getBoundingClientRect();
-    const x = (t.clientX - rect.left) / rect.width;
-    const y = (t.clientY - rect.top)  / rect.height;
-
-    cursor.style.display = 'block';
-    cursor.style.left = (t.clientX - document.getElementById('theremin').getBoundingClientRect().left) + 'px';
-    cursor.style.top  = (t.clientY - document.getElementById('theremin').getBoundingClientRect().top)  + 'px';
-
-    const basePitch = parseFloat(document.getElementById('base-pitch').value);
-    const freq = basePitch * Math.pow(4, x); // 1 oct range × position
-
-    if (!thereminActive) {
-      startNote('theremin', freq);
-      hint.style.opacity = '0';
-      thereminActive = true;
-    } else {
-      if (oscillators['theremin']) {
-        oscillators['theremin'].osc.frequency.setTargetAtTime(freq, ctx.currentTime, 0.02);
-        oscillators['theremin'].baseFreq = freq;
-      }
-    }
+    const x = Math.max(0, Math.min(1, (cx-rect.left)/rect.width));
+    return parseFloat(document.getElementById('base-pitch').value) * Math.pow(4, x);
+  };
+  const moveCur = (cx,cy) => {
+    const r = ther.getBoundingClientRect();
+    cursor.style.left=(cx-r.left)+'px'; cursor.style.top=(cy-r.top)+'px';
   };
 
-  const onEnd = (e) => {
-    e.preventDefault();
-    stopNote('theremin');
-    thereminActive = false;
-    cursor.style.display = 'none';
-    hint.style.opacity = '1';
-  };
-
-  field.addEventListener('touchstart', onTouch, {passive:false});
-  field.addEventListener('touchmove',  onTouch, {passive:false});
-  field.addEventListener('touchend',   onEnd,   {passive:false});
-  field.addEventListener('mousedown',  (e)=>{
-    const rect = field.getBoundingClientRect();
-    const x = (e.clientX-rect.left)/rect.width;
-    const basePitch = parseFloat(document.getElementById('base-pitch').value);
-    const freq = basePitch * Math.pow(4, x);
-    startNote('theremin', freq); thereminActive=true;
-  });
-  field.addEventListener('mousemove',  (e)=>{
-    if(!thereminActive) return;
-    const rect = field.getBoundingClientRect();
-    const x = (e.clientX-rect.left)/rect.width;
-    const basePitch = parseFloat(document.getElementById('base-pitch').value);
-    const freq = basePitch * Math.pow(4, x);
-    if (oscillators['theremin']) {
-      oscillators['theremin'].osc.frequency.setTargetAtTime(freq, ctx.currentTime, 0.02);
-      oscillators['theremin'].baseFreq = freq;
-    }
-  });
-  field.addEventListener('mouseup',    ()=>{ stopNote('theremin'); thereminActive=false; });
+  field.addEventListener('touchstart',(e)=>{ e.preventDefault(); const t=e.touches[0]; cursor.style.display='block'; moveCur(t.clientX,t.clientY); if(!thereminActive){startNote('theremin',getFreq(t.clientX)); hint.style.opacity='0'; thereminActive=true;} },{passive:false});
+  field.addEventListener('touchmove', (e)=>{ e.preventDefault(); const t=e.touches[0]; moveCur(t.clientX,t.clientY); if(oscillators['theremin']){oscillators['theremin'].osc.frequency.setTargetAtTime(getFreq(t.clientX),ctx.currentTime,0.02); oscillators['theremin'].baseFreq=getFreq(t.clientX);} },{passive:false});
+  field.addEventListener('touchend',  (e)=>{ e.preventDefault(); stopNote('theremin'); thereminActive=false; cursor.style.display='none'; hint.style.opacity='1'; },{passive:false});
+  field.addEventListener('mousedown', (e)=>{ startNote('theremin',getFreq(e.clientX)); thereminActive=true; });
+  field.addEventListener('mousemove', (e)=>{ if(!thereminActive) return; if(oscillators['theremin']){oscillators['theremin'].osc.frequency.setTargetAtTime(getFreq(e.clientX),ctx.currentTime,0.02); oscillators['theremin'].baseFreq=getFreq(e.clientX);} });
+  field.addEventListener('mouseup',   ()=>{ stopNote('theremin'); thereminActive=false; });
 }
 
-// ─── OSCILLOSCOPE ───────────────────────────────────────────────────────────
-let scopeRunning = false;
+// ══════════════════════════════════════════════════════════
+// OSCILLOSCOPE
+// ══════════════════════════════════════════════════════════
 function startScope() {
-  if (scopeRunning) return;
-  scopeRunning = true;
   const canvas = document.getElementById('scope');
-  const canvasCtx = canvas.getContext('2d');
-
+  const cc = canvas.getContext('2d');
   const draw = () => {
     requestAnimationFrame(draw);
     canvas.width  = canvas.offsetWidth;
     canvas.height = canvas.offsetHeight;
-    const W = canvas.width, H = canvas.height;
+    const W=canvas.width, H=canvas.height;
+    cc.clearRect(0,0,W,H);
 
-    canvasCtx.clearRect(0,0,W,H);
-
-    // Grid lines
-    canvasCtx.strokeStyle = 'rgba(0,255,231,0.05)';
-    canvasCtx.lineWidth = 1;
-    for (let x=0; x<W; x+=40) { canvasCtx.beginPath(); canvasCtx.moveTo(x,0); canvasCtx.lineTo(x,H); canvasCtx.stroke(); }
-    for (let y=0; y<H; y+=40) { canvasCtx.beginPath(); canvasCtx.moveTo(0,y); canvasCtx.lineTo(W,y); canvasCtx.stroke(); }
-    // Center
-    canvasCtx.strokeStyle = 'rgba(0,255,231,0.12)';
-    canvasCtx.beginPath(); canvasCtx.moveTo(0,H/2); canvasCtx.lineTo(W,H/2); canvasCtx.stroke();
+    // Grid
+    cc.strokeStyle='rgba(0,255,231,0.05)'; cc.lineWidth=1;
+    for(let x=0;x<W;x+=40){cc.beginPath();cc.moveTo(x,0);cc.lineTo(x,H);cc.stroke();}
+    for(let y=0;y<H;y+=40){cc.beginPath();cc.moveTo(0,y);cc.lineTo(W,y);cc.stroke();}
+    cc.strokeStyle='rgba(0,255,231,0.12)';
+    cc.beginPath();cc.moveTo(0,H/2);cc.lineTo(W,H/2);cc.stroke();
 
     if (!analyser) return;
-    const buf = new Float32Array(analyser.fftSize);
-    analyser.getFloatTimeDomainData(buf);
 
     // Waveform
-    canvasCtx.beginPath();
-    canvasCtx.strokeStyle = '#00ffe7';
-    canvasCtx.lineWidth = 2;
-    canvasCtx.shadowColor = '#00ffe7';
-    canvasCtx.shadowBlur = 8;
-    const sliceW = W / buf.length;
-    let x = 0;
-    for (let i=0; i<buf.length; i++) {
-      const y = H/2 + buf[i] * H/2 * 0.9;
-      i===0 ? canvasCtx.moveTo(x,y) : canvasCtx.lineTo(x,y);
-      x += sliceW;
+    const buf = new Float32Array(analyser.fftSize);
+    analyser.getFloatTimeDomainData(buf);
+    cc.beginPath(); cc.strokeStyle='#00ffe7'; cc.lineWidth=2;
+    cc.shadowColor='#00ffe7'; cc.shadowBlur=8;
+    const sw=W/buf.length; let xi=0;
+    for(let i=0;i<buf.length;i++){
+      const y=H/2+buf[i]*H/2*0.85;
+      i===0?cc.moveTo(xi,y):cc.lineTo(xi,y); xi+=sw;
     }
-    canvasCtx.stroke();
-    canvasCtx.shadowBlur = 0;
+    cc.stroke(); cc.shadowBlur=0;
+
+    // LFO overlay (animated)
+    if (lfoOn) {
+      const rate  = parseFloat(document.getElementById('lfo-rate').value);
+      const depth = parseFloat(document.getElementById('lfo-depth').value);
+      lfoPhase += rate * 0.04;
+      cc.beginPath(); cc.strokeStyle='rgba(123,47,255,0.55)'; cc.lineWidth=1.5;
+      cc.shadowColor='#7b2fff'; cc.shadowBlur=5;
+      for(let i=0;i<W;i++){
+        const t = (i/W)*rate*Math.PI*2 + lfoPhase;
+        let v=0;
+        if      (lfoShape==='sine')     v = Math.sin(t);
+        else if (lfoShape==='square')   v = Math.sign(Math.sin(t));
+        else if (lfoShape==='triangle') v = 2/Math.PI * Math.asin(Math.sin(t));
+        else                             v = ((t/(Math.PI*2))%1)*2-1; // sawtooth
+        const y = H/2 + v * depth * (H/3.5);
+        i===0 ? cc.moveTo(i,y) : cc.lineTo(i,y);
+      }
+      cc.stroke(); cc.shadowBlur=0;
+    }
   };
   draw();
 }
 
-// ─── MODE ───────────────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════
+// MODE / WAVE
+// ══════════════════════════════════════════════════════════
 function setMode(m) {
   currentMode = m;
-  document.getElementById('pads').style.display     = m==='pads'     ? 'grid' : 'none';
-  document.getElementById('theremin').style.display = m==='theremin' ? 'block': 'none';
+  document.getElementById('pads').style.display     = m==='pads'     ? 'grid':'none';
+  document.getElementById('theremin').style.display = m==='theremin' ? 'block':'none';
   document.getElementById('btn-pads').classList.toggle('active',     m==='pads');
   document.getElementById('btn-theremin').classList.toggle('active', m==='theremin');
-  // Stop all notes on switch
-  Object.keys(oscillators).forEach(stopNote);
-  Object.keys(noiseNodes).forEach(stopNote);
+  // Stop all notes, reset pad visuals
+  [...Object.keys(oscillators), ...Object.keys(noiseNodes)].forEach(stopNote);
+  for (const id in padState) {
+    padState[id] = false;
+    const el = document.getElementById(id); if (el) el.classList.remove('on');
+  }
 }
 
-// ─── WAVE ───────────────────────────────────────────────────────────────────
 function setWave(w) {
   currentWave = w;
-  document.querySelectorAll('.wave-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.wave-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('w-'+w).classList.add('active');
-  Object.keys(oscillators).forEach(id=>{
-    if (oscillators[id] && oscillators[id].osc) oscillators[id].osc.type = w;
-  });
+  for (const id in oscillators) { if (oscillators[id].osc) oscillators[id].osc.type = w; }
 }
 
-// ─── INIT ────────────────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════
 document.getElementById('permit-btn').addEventListener('click', async () => {
-  // Request DeviceOrientation permission on iOS 13+
   if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
-    try {
-      const resp = await DeviceOrientationEvent.requestPermission();
-      if (resp !== 'granted') { alert('Gyro-Zugriff verweigert. App funktioniert ohne Gyro.'); }
-    } catch(e) {}
+    try { const r = await DeviceOrientationEvent.requestPermission(); if(r!=='granted') console.warn('Gyro denied'); } catch(e) {}
   }
   if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
     try { await DeviceMotionEvent.requestPermission(); } catch(e) {}
@@ -706,7 +785,10 @@ document.getElementById('permit-btn').addEventListener('click', async () => {
   initGyro();
   startScope();
   setMode('pads');
-  gyroEnabled = true;
+
+  // Init slider track fills
+  document.getElementById('lfo-rate').style.setProperty('--pct','5%');
+  document.getElementById('lfo-depth').style.setProperty('--pct','50%');
 });
 </script>
 </body>
