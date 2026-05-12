@@ -6,274 +6,176 @@
 <title>GyroSynth</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap');
-
 :root {
-  --bg:     #070b0f;
-  --bg2:    #0c1520;
-  --bg3:    #101c2c;
-  --acc:    #00ffe7;
-  --acc2:   #ff6b35;
-  --acc3:   #7b2fff;
-  --accY:   #ffcc00;
-  --dim:    #172030;
-  --dim2:   #1e2e40;
-  --text:   #c0d8ee;
-  --tdim:   #3a5a6a;
-  --grid:   rgba(0,255,231,0.035);
-  --glow:   0 0 18px rgba(0,255,231,0.35);
-  --glow3:  0 0 14px rgba(123,47,255,0.5);
-  --glowY:  0 0 14px rgba(255,204,0,0.4);
+  --bg:#070b0f; --bg2:#0c1520; --bg3:#101c2c;
+  --acc:#00ffe7; --acc2:#ff6b35; --acc3:#7b2fff; --accY:#ffcc00;
+  --dim:#172030; --dim2:#1e2e40;
+  --text:#c0d8ee; --tdim:#3a5a6a;
+  --grid:rgba(0,255,231,0.035);
+  --glow:0 0 18px rgba(0,255,231,0.35);
+  --glow3:0 0 14px rgba(123,47,255,0.5);
 }
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;}
+html,body{width:100%;height:100%;overflow:hidden;}
+body{
+  background:var(--bg); font-family:'Share Tech Mono',monospace; color:var(--text);
+  position:fixed; inset:0;
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:36px 36px;
+}
+body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:998;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.07) 2px,rgba(0,0,0,0.07) 4px);}
 
-*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; user-select:none; }
+/* PERMISSION */
+#perm{position:fixed;inset:0;z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;background:var(--bg);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:36px 36px;}
+#perm h1{font-family:'Orbitron',sans-serif;font-size:40px;font-weight:900;color:var(--acc);letter-spacing:8px;text-shadow:var(--glow);animation:blink 2.4s ease-in-out infinite;}
+#perm h1 span{color:var(--acc2);}
+#perm p{color:var(--tdim);font-size:13px;text-align:center;max-width:280px;line-height:1.9;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.55}}
+#start-btn{background:transparent;border:1px solid var(--acc);color:var(--acc);font-family:'Share Tech Mono',monospace;font-size:15px;padding:15px 46px;letter-spacing:4px;cursor:pointer;box-shadow:var(--glow),inset 0 0 18px rgba(0,255,231,0.04);transition:.2s;}
+#start-btn:active{background:rgba(0,255,231,0.08);transform:scale(.97);}
 
-html, body { width:100%; height:100%; overflow:hidden; }
+/* APP */
+#app{position:fixed;inset:0;display:flex;flex-direction:column;}
 
-body {
-  background: var(--bg);
-  font-family: 'Share Tech Mono', monospace;
-  color: var(--text);
-  position: fixed; inset: 0;
-  background-image:
-    linear-gradient(var(--grid) 1px, transparent 1px),
-    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
-  background-size: 36px 36px;
-}
-/* scanlines */
-body::after {
-  content:''; position:fixed; inset:0; pointer-events:none; z-index:998;
-  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.07) 2px, rgba(0,0,0,0.07) 4px);
-}
+/* HEADER */
+#hdr{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--dim);flex-shrink:0;}
+#logo{font-family:'Orbitron',sans-serif;font-size:16px;font-weight:900;color:var(--acc);letter-spacing:4px;text-shadow:var(--glow);}
+#logo span{color:var(--acc2);}
+#voc-btn{background:transparent;border:1px solid var(--dim);color:var(--tdim);font-family:'Share Tech Mono',monospace;font-size:10px;padding:6px 14px;letter-spacing:2px;cursor:pointer;border-radius:3px;transition:.2s;display:flex;align-items:center;gap:7px;}
+#voc-btn.on{border-color:var(--acc2);color:var(--acc2);box-shadow:0 0 14px rgba(255,107,53,.4);}
+#voc-dot{width:6px;height:6px;border-radius:50%;background:var(--dim);transition:.2s;}
+#voc-btn.on #voc-dot{background:var(--acc2);box-shadow:0 0 6px var(--acc2);animation:vocpulse 1s ease-in-out infinite;}
+@keyframes vocpulse{0%,100%{opacity:1}50%{opacity:.3}}
 
-/* ════════════════════════════════════════
-   PERMISSION SCREEN
-════════════════════════════════════════ */
-#perm {
-  position:fixed; inset:0; z-index:200;
-  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:28px;
-  background: var(--bg);
-  background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
-  background-size: 36px 36px;
-}
-#perm h1 {
-  font-family:'Orbitron',sans-serif; font-size:40px; font-weight:900;
-  color:var(--acc); letter-spacing:8px; text-shadow:var(--glow);
-  animation: blink 2.4s ease-in-out infinite;
-}
-#perm h1 span { color:var(--acc2); }
-#perm p { color:var(--tdim); font-size:13px; text-align:center; max-width:280px; line-height:1.9; }
-@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.55} }
-#start-btn {
-  background:transparent; border:1px solid var(--acc); color:var(--acc);
-  font-family:'Share Tech Mono',monospace; font-size:15px; padding:15px 46px;
-  letter-spacing:4px; cursor:pointer;
-  box-shadow: var(--glow), inset 0 0 18px rgba(0,255,231,0.04);
-  transition:.2s;
-}
-#start-btn:active { background:rgba(0,255,231,0.08); transform:scale(.97); }
+/* SCOPE */
+#scope-wrap{height:100px;flex-shrink:0;position:relative;border-bottom:1px solid var(--dim);}
+#scope{width:100%;height:100%;display:block;}
+#slbl{position:absolute;top:5px;left:12px;font-size:8px;color:var(--tdim);letter-spacing:2px;}
+#lfo-ind{position:absolute;top:5px;right:12px;font-size:8px;color:var(--acc3);letter-spacing:2px;display:flex;align-items:center;gap:5px;}
+#lfo-dot{width:6px;height:6px;border-radius:50%;background:var(--dim);transition:.3s;flex-shrink:0;}
+#lfo-dot.on{background:var(--acc3);box-shadow:var(--glow3);animation:lfoblink 1s ease-in-out infinite;}
+@keyframes lfoblink{0%,100%{opacity:1}50%{opacity:.25}}
 
-/* ════════════════════════════════════════
-   APP SHELL  — full portrait
-════════════════════════════════════════ */
-#app { position:fixed; inset:0; display:flex; flex-direction:column; }
+/* GYRO BAR */
+#gyro-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--dim);flex-shrink:0;}
+.gc{background:var(--bg2);padding:5px 8px;display:flex;flex-direction:column;gap:3px;}
+.gl{font-size:8px;color:var(--tdim);letter-spacing:1px;}
+.gv{font-size:11px;font-family:'Orbitron',sans-serif;}
+.c1{color:var(--acc);}.c2{color:var(--acc2);}.c3{color:var(--acc3);}.c4{color:var(--accY);}
+.gtrack{height:3px;background:var(--dim);border-radius:2px;overflow:hidden;}
+.gfill{height:100%;border-radius:2px;transition:width .06s;}
+.f1{background:var(--acc);}.f2{background:var(--acc2);}.f3{background:var(--acc3);}.f4{background:var(--accY);}
 
-/* ── HEADER ── */
-#hdr {
-  display:flex; align-items:center; justify-content:space-between;
-  padding:10px 16px 10px 16px;
-  border-bottom:1px solid var(--dim); flex-shrink:0;
-}
-#logo { font-family:'Orbitron',sans-serif; font-size:16px; font-weight:900; color:var(--acc); letter-spacing:4px; text-shadow:var(--glow); }
-#logo span { color:var(--acc2); }
-/* header right: vocoder btn */
-#voc-btn {
-  background:transparent; border:1px solid var(--dim); color:var(--tdim);
-  font-family:'Share Tech Mono',monospace; font-size:10px; padding:6px 14px;
-  letter-spacing:2px; cursor:pointer; border-radius:3px; transition:.2s;
-  display:flex; align-items:center; gap:7px;
-}
-#voc-btn.on { border-color:var(--acc2); color:var(--acc2); box-shadow:var(--glow2,0 0 14px rgba(255,107,53,.4)); }
-#voc-dot { width:6px; height:6px; border-radius:50%; background:var(--dim); transition:.2s; }
-#voc-btn.on #voc-dot { background:var(--acc2); box-shadow:0 0 6px var(--acc2); animation:vocpulse 1s ease-in-out infinite; }
-@keyframes vocpulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+/* WAVE ROW */
+#wave-row{display:flex;align-items:center;gap:6px;padding:6px 12px;border-bottom:1px solid var(--dim);flex-shrink:0;}
+.wlbl{font-size:8px;color:var(--tdim);letter-spacing:2px;flex-shrink:0;}
+.wbtn{background:transparent;border:1px solid var(--dim);color:var(--tdim);font-family:'Share Tech Mono',monospace;font-size:10px;padding:5px 9px;cursor:pointer;border-radius:2px;transition:.15s;letter-spacing:1px;}
+.wbtn.on{border-color:var(--acc);color:var(--acc);box-shadow:0 0 7px rgba(0,255,231,.2);}
+#base-pitch-wrap{margin-left:auto;display:flex;align-items:center;gap:6px;}
+#base-pitch{width:70px;accent-color:var(--acc);}
+#bp-val{font-size:9px;color:var(--acc);font-family:'Orbitron',sans-serif;min-width:36px;}
 
-/* ── OSCILLOSCOPE ── */
-#scope-wrap {
-  height: 110px; flex-shrink:0; position:relative;
-  border-bottom:1px solid var(--dim);
-}
-#scope { width:100%; height:100%; display:block; }
-#slbl { position:absolute; top:5px; left:12px; font-size:8px; color:var(--tdim); letter-spacing:2px; }
-#lfo-ind {
-  position:absolute; top:5px; right:12px; font-size:8px; color:var(--acc3); letter-spacing:2px;
-  display:flex; align-items:center; gap:5px;
-}
-#lfo-dot { width:6px; height:6px; border-radius:50%; background:var(--dim); transition:.3s; flex-shrink:0; }
-#lfo-dot.on { background:var(--acc3); box-shadow:var(--glow3); animation:lfoblink 1s ease-in-out infinite; }
-@keyframes lfoblink { 0%,100%{opacity:1} 50%{opacity:.25} }
+/* MAIN BODY */
+#main-body{flex:1;display:flex;min-height:0;overflow:hidden;}
 
-/* ── GYRO BAR ── */
-#gyro-bar {
-  display:grid; grid-template-columns:repeat(4,1fr);
-  gap:1px; background:var(--dim); flex-shrink:0;
-}
-.gc { background:var(--bg2); padding:6px 9px; display:flex; flex-direction:column; gap:3px; }
-.gl { font-size:8px; color:var(--tdim); letter-spacing:1px; }
-.gv { font-size:12px; font-family:'Orbitron',sans-serif; }
-.c1{color:var(--acc);} .c2{color:var(--acc2);} .c3{color:var(--acc3);} .c4{color:var(--accY);}
-.gtrack { height:3px; background:var(--dim); border-radius:2px; overflow:hidden; }
-.gfill { height:100%; border-radius:2px; transition:width .06s; }
-.f1{background:var(--acc);} .f2{background:var(--acc2);} .f3{background:var(--acc3);} .f4{background:var(--accY);}
-
-/* ── WAVEFORM ROW ── */
-#wave-row {
-  display:flex; align-items:center; gap:8px; padding:7px 14px;
-  border-bottom:1px solid var(--dim); flex-shrink:0; flex-wrap:wrap;
-}
-.wlbl { font-size:8px; color:var(--tdim); letter-spacing:2px; flex-shrink:0; }
-.wbtn {
-  background:transparent; border:1px solid var(--dim); color:var(--tdim);
-  font-family:'Share Tech Mono',monospace; font-size:10px; padding:5px 10px;
-  cursor:pointer; border-radius:2px; transition:.15s; letter-spacing:1px;
-}
-.wbtn.on { border-color:var(--acc); color:var(--acc); box-shadow:0 0 7px rgba(0,255,231,.2); }
-#base-pitch-wrap { margin-left:auto; display:flex; align-items:center; gap:7px; }
-#base-pitch { width:80px; accent-color:var(--acc); }
-#bp-val { font-size:9px; color:var(--acc); font-family:'Orbitron',sans-serif; min-width:34px; }
-
-/* ════════════════════════════════════════
-   MAIN BODY: [RATE-FADER] [PADS] [DEPTH-FADER]
-════════════════════════════════════════ */
-#main-body {
-  flex:1; display:flex; min-height:0; overflow:hidden;
-}
-
-/* ── VERTICAL FADER COLUMN ── */
-.fader-col {
-  width: 68px; flex-shrink:0;
+/* ── FADER COLUMN ── */
+.fader-col{
+  width:72px; flex-shrink:0;
   display:flex; flex-direction:column; align-items:center;
-  padding:10px 0 12px;
+  padding:10px 0 10px;
   border-right:1px solid var(--dim);
-  gap:8px;
+  gap:6px;
   background:rgba(123,47,255,0.03);
 }
-.fader-col.right { border-right:none; border-left:1px solid var(--dim); }
-.fader-title { font-size:8px; color:var(--acc3); letter-spacing:2px; }
-.fader-val { font-size:11px; color:var(--acc3); font-family:'Orbitron',sans-serif; }
+.fader-col.right{border-right:none;border-left:1px solid var(--dim);}
+.fader-title{font-size:8px;color:var(--acc3);letter-spacing:2px;}
+.fader-val{font-size:11px;color:var(--acc3);font-family:'Orbitron',sans-serif;min-width:40px;text-align:center;}
 
-/* custom vertical range input */
-.vslider {
-  -webkit-appearance: none; appearance: none;
-  writing-mode: vertical-lr;
-  direction: rtl;          /* top = max */
-  width: 36px;
-  flex:1;
-  background: transparent;
-  outline:none; cursor:pointer;
+/* Custom fader track — 50% of column height */
+.fader-track-wrap{
+  position:relative;
+  width:36px;
+  height:50%; /* ← 50% of column */
+  flex-shrink:0;
+  cursor:pointer;
 }
-.vslider::-webkit-slider-runnable-track {
-  width: 4px;
-  border-radius: 3px;
-  background: var(--dim2);
-  box-shadow: inset 0 0 0 1px rgba(123,47,255,0.2);
+.fader-track{
+  position:absolute; left:50%; transform:translateX(-50%);
+  width:4px; top:0; bottom:0; border-radius:3px;
+  background:var(--dim2);
+  box-shadow:inset 0 0 0 1px rgba(123,47,255,0.2);
 }
-.vslider::-webkit-slider-thumb {
-  -webkit-appearance:none;
-  width: 32px; height: 20px;
-  background: var(--bg3);
-  border: 1px solid var(--acc3);
-  border-radius: 4px;
-  box-shadow: var(--glow3);
-  cursor: grab;
-  margin-left: -14px;
+.fader-fill{
+  position:absolute; left:50%; transform:translateX(-50%);
+  width:4px; bottom:0; border-radius:3px;
+  background:var(--acc3);
+  box-shadow:0 0 6px rgba(123,47,255,0.4);
+  transition:height .04s;
 }
-.vslider:active::-webkit-slider-thumb { background:rgba(123,47,255,0.15); cursor:grabbing; }
+.fader-thumb{
+  position:absolute; left:50%; transform:translate(-50%,-50%);
+  width:34px; height:18px; border-radius:4px;
+  background:var(--bg3); border:1px solid var(--acc3);
+  box-shadow:var(--glow3);
+  cursor:grab; transition:background .1s;
+}
+.fader-thumb:active,.fader-thumb.dragging{background:rgba(123,47,255,0.18);cursor:grabbing;}
 
-/* LFO shape + target inside fader column */
-.fader-mini-btns { display:flex; flex-direction:column; gap:4px; width:100%; padding:0 8px; }
-.fmb {
-  background:transparent; border:1px solid var(--dim); color:var(--tdim);
-  font-family:'Share Tech Mono',monospace; font-size:8px; padding:4px 0;
-  cursor:pointer; border-radius:2px; transition:.15s; letter-spacing:1px;
-  text-align:center;
-}
-.fmb.on { border-color:var(--acc3); color:var(--acc3); }
-.fader-sep { font-size:7px; color:var(--tdim); letter-spacing:1px; padding:2px 0; }
+/* mini buttons below fader */
+.fader-mini-btns{display:flex;flex-direction:column;gap:4px;width:100%;padding:0 8px;}
+.fmb{background:transparent;border:1px solid var(--dim);color:var(--tdim);font-family:'Share Tech Mono',monospace;font-size:8px;padding:4px 0;cursor:pointer;border-radius:2px;transition:.15s;letter-spacing:1px;text-align:center;}
+.fmb.on{border-color:var(--acc3);color:var(--acc3);}
+.fader-sep{font-size:7px;color:var(--tdim);letter-spacing:1px;}
+#lfo-master{background:transparent;border:1px solid var(--dim);color:var(--tdim);font-family:'Share Tech Mono',monospace;font-size:9px;padding:5px 0;cursor:pointer;border-radius:2px;transition:.2s;letter-spacing:2px;width:calc(100% - 16px);text-align:center;}
+#lfo-master.on{border-color:var(--acc3);color:var(--acc3);box-shadow:var(--glow3);}
 
-/* LFO master toggle */
-#lfo-master {
-  background:transparent; border:1px solid var(--dim); color:var(--tdim);
-  font-family:'Share Tech Mono',monospace; font-size:9px; padding:5px 0;
-  cursor:pointer; border-radius:2px; transition:.2s; letter-spacing:2px;
-  width:calc(100% - 16px);
-}
-#lfo-master.on { border-color:var(--acc3); color:var(--acc3); box-shadow:var(--glow3); }
-
-/* ── PAD GRID ── */
-#pads {
+/* PAD GRID — 50% of main-body width (centering between two faders) */
+#pads{
   flex:1;
   display:grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-template-rows:    repeat(4, 1fr);
-  gap: 5px; padding: 8px;
+  grid-template-columns:repeat(3,1fr);
+  grid-template-rows:repeat(4,1fr);
+  gap:5px; padding:8px;
   overflow:hidden;
 }
-.pad {
-  background:var(--bg3); border:1px solid var(--dim); border-radius:8px;
-  display:flex; flex-direction:column; align-items:center; justify-content:center;
-  cursor:pointer; position:relative; overflow:hidden;
-  transition: border-color .12s, box-shadow .12s, background .12s;
-}
-.pad::before {
-  content:''; position:absolute; inset:0;
-  background:radial-gradient(circle at 50% 40%, rgba(0,255,231,.18) 0%, transparent 70%);
-  opacity:0; transition:opacity .15s;
-}
-.pad.on { border-color:var(--acc); box-shadow:var(--glow); background:rgba(0,255,231,.04); }
-.pad.on::before { opacity:1; }
-.pad-led {
-  position:absolute; top:7px; right:8px;
-  width:6px; height:6px; border-radius:50%;
-  background:var(--dim); transition:.12s;
-}
-.pad.on .pad-led { background:var(--acc); box-shadow:0 0 6px var(--acc); }
-.pad-note { font-family:'Orbitron',sans-serif; font-size:15px; color:var(--tdim); z-index:1; transition:color .12s; }
-.pad.on .pad-note { color:var(--acc); text-shadow:0 0 10px rgba(0,255,231,.6); }
-.pad-freq { font-size:9px; color:var(--tdim); margin-top:3px; z-index:1; }
-/* tap flash */
-@keyframes tapflash { from{opacity:.2} to{opacity:0} }
-.pad.tap::after { content:''; position:absolute; inset:0; border-radius:8px; background:rgba(0,255,231,.12); animation:tapflash .18s ease-out forwards; }
+.pad{background:var(--bg3);border:1px solid var(--dim);border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;position:relative;overflow:hidden;transition:border-color .12s,box-shadow .12s,background .12s;}
+.pad::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 40%,rgba(0,255,231,.18) 0%,transparent 70%);opacity:0;transition:opacity .15s;}
+.pad.on{border-color:var(--acc);box-shadow:var(--glow);background:rgba(0,255,231,.04);}
+.pad.on::before{opacity:1;}
+.pad-led{position:absolute;top:6px;right:7px;width:6px;height:6px;border-radius:50%;background:var(--dim);transition:.12s;}
+.pad.on .pad-led{background:var(--acc);box-shadow:0 0 6px var(--acc);}
+.pad-note{font-family:'Orbitron',sans-serif;font-size:14px;color:var(--tdim);z-index:1;transition:color .12s;}
+.pad.on .pad-note{color:var(--acc);text-shadow:0 0 10px rgba(0,255,231,.6);}
+.pad-freq{font-size:9px;color:var(--tdim);margin-top:2px;z-index:1;}
+@keyframes tapflash{from{opacity:.2}to{opacity:0}}
+.pad.tap::after{content:'';position:absolute;inset:0;border-radius:8px;background:rgba(0,255,231,.12);animation:tapflash .18s ease-out forwards;}
 
-/* ════════════════════════════════════════
-   VOCODER BAND VIZ (bottom strip)
-════════════════════════════════════════ */
-#voc-strip {
-  height:40px; flex-shrink:0;
+/* VOCODER STRIP — bigger */
+#voc-strip{
+  height:90px; flex-shrink:0;
   border-top:1px solid var(--dim);
-  display:flex; align-items:flex-end; padding:4px 8px; gap:3px;
-  background:rgba(255,107,53,.03);
+  display:flex; align-items:flex-end; padding:6px 10px 6px; gap:3px;
+  background:rgba(255,107,53,.04); position:relative;
 }
-.vband {
+.vband{
   flex:1; border-radius:2px 2px 0 0;
   background:var(--acc2); opacity:0.15;
-  min-height:3px; transition:height .06s, opacity .06s;
+  min-height:4px;
 }
-#voc-label {
-  font-size:8px; color:var(--tdim); letter-spacing:2px;
-  position:absolute; bottom:44px; left:50%; transform:translateX(-50%);
-  white-space:nowrap;
+#voc-label{
+  position:absolute; top:5px; left:50%; transform:translateX(-50%);
+  font-size:8px; color:var(--tdim); letter-spacing:2px; white-space:nowrap;
 }
 
 /* SHAKE */
-#shake-flash { position:fixed; inset:0; pointer-events:none; z-index:500; background:radial-gradient(ellipse at center, rgba(123,47,255,.3) 0%, transparent 70%); opacity:0; transition:opacity .1s; }
-#shake-flash.active { opacity:1; }
+#shake-flash{position:fixed;inset:0;pointer-events:none;z-index:500;background:radial-gradient(ellipse at center,rgba(123,47,255,.3) 0%,transparent 70%);opacity:0;transition:opacity .1s;}
+#shake-flash.active{opacity:1;}
 </style>
 </head>
 <body>
-
 <div id="shake-flash"></div>
 
-<!-- ════ PERMISSION ════ -->
+<!-- PERMISSION -->
 <div id="perm">
   <div style="text-align:center">
     <div style="font-family:Orbitron,sans-serif;font-size:10px;letter-spacing:6px;color:var(--tdim);margin-bottom:10px">MOTION · VOCAL · SYNTHESIZER</div>
@@ -281,56 +183,32 @@ body::after {
   </div>
   <p>Benötigt Zugriff auf Gyrosensor und Mikrofon.<br>Pads funktionieren auch ohne Sensoren.</p>
   <button id="start-btn">[ STARTEN ]</button>
-  <p style="font-size:10px;color:var(--tdim)">Neigung → Pitch · Amp · Distortion &nbsp;|&nbsp; Schütteln → Reverb</p>
+  <p style="font-size:10px;color:var(--tdim)">Neigung → Pitch · Amp · Distortion | Schütteln → Reverb</p>
 </div>
 
-<!-- ════ APP ════ -->
+<!-- APP -->
 <div id="app" style="display:none">
 
-  <!-- HEADER -->
   <div id="hdr">
     <div id="logo">GYRO<span>SYNTH</span></div>
     <button id="voc-btn" onclick="toggleVocoder()">
-      <div id="voc-dot"></div>
-      <span>VOCODER</span>
+      <div id="voc-dot"></div><span>VOCODER</span>
     </button>
   </div>
 
-  <!-- SCOPE -->
   <div id="scope-wrap">
     <canvas id="scope"></canvas>
     <div id="slbl">OSCILLOSCOPE</div>
-    <div id="lfo-ind">
-      <div id="lfo-dot"></div>
-      <span id="lfo-lbl">LFO OFF</span>
-    </div>
+    <div id="lfo-ind"><div id="lfo-dot"></div><span id="lfo-lbl">LFO OFF</span></div>
   </div>
 
-  <!-- GYRO -->
   <div id="gyro-bar">
-    <div class="gc">
-      <div class="gl">PITCH ↕</div>
-      <div class="gv c1" id="gv-p">0°</div>
-      <div class="gtrack"><div class="gfill f1" id="gb-p" style="width:50%"></div></div>
-    </div>
-    <div class="gc">
-      <div class="gl">AMP ↔</div>
-      <div class="gv c2" id="gv-a">0°</div>
-      <div class="gtrack"><div class="gfill f2" id="gb-a" style="width:50%"></div></div>
-    </div>
-    <div class="gc">
-      <div class="gl">DIST ↻</div>
-      <div class="gv c3" id="gv-d">0.00</div>
-      <div class="gtrack"><div class="gfill f3" id="gb-d" style="width:0%"></div></div>
-    </div>
-    <div class="gc">
-      <div class="gl">REVERB ⌇</div>
-      <div class="gv c4" id="gv-r">0.00</div>
-      <div class="gtrack"><div class="gfill f4" id="gb-r" style="width:0%"></div></div>
-    </div>
+    <div class="gc"><div class="gl">PITCH ↕</div><div class="gv c1" id="gv-p">0°</div><div class="gtrack"><div class="gfill f1" id="gb-p" style="width:50%"></div></div></div>
+    <div class="gc"><div class="gl">AMP ↔</div><div class="gv c2" id="gv-a">0°</div><div class="gtrack"><div class="gfill f2" id="gb-a" style="width:50%"></div></div></div>
+    <div class="gc"><div class="gl">DIST ↻</div><div class="gv c3" id="gv-d">0.00</div><div class="gtrack"><div class="gfill f3" id="gb-d" style="width:0%"></div></div></div>
+    <div class="gc"><div class="gl">REVERB ⌇</div><div class="gv c4" id="gv-r">0.00</div><div class="gtrack"><div class="gfill f4" id="gb-r" style="width:0%"></div></div></div>
   </div>
 
-  <!-- WAVE ROW -->
   <div id="wave-row">
     <span class="wlbl">OSC</span>
     <button class="wbtn on" onclick="setWave('sine')"     id="w-sine">SIN</button>
@@ -346,15 +224,16 @@ body::after {
     </div>
   </div>
 
-  <!-- MAIN BODY: rate-fader | pads | depth-fader -->
   <div id="main-body">
 
-    <!-- LEFT: LFO RATE FADER -->
-    <div class="fader-col">
+    <!-- LEFT FADER: RATE -->
+    <div class="fader-col" id="col-rate">
       <div class="fader-title">RATE</div>
-      <input type="range" class="vslider" id="lfo-rate"
-        min="0.05" max="20" step="0.05" value="1"
-        oninput="onFaderInput()">
+      <div class="fader-track-wrap" id="ft-rate">
+        <div class="fader-track"></div>
+        <div class="fader-fill" id="ff-rate" style="height:5%"></div>
+        <div class="fader-thumb" id="fth-rate"></div>
+      </div>
       <div class="fader-val" id="lfo-rate-val">1.0Hz</div>
       <div class="fader-sep">SHAPE</div>
       <div class="fader-mini-btns">
@@ -366,15 +245,16 @@ body::after {
       <button id="lfo-master" onclick="toggleLFO()">OFF</button>
     </div>
 
-    <!-- CENTER: PADS -->
     <div id="pads"></div>
 
-    <!-- RIGHT: LFO DEPTH FADER -->
-    <div class="fader-col right">
+    <!-- RIGHT FADER: DEPTH -->
+    <div class="fader-col right" id="col-depth">
       <div class="fader-title">DEPTH</div>
-      <input type="range" class="vslider" id="lfo-depth"
-        min="0" max="1" step="0.01" value="0.5"
-        oninput="onFaderInput()">
+      <div class="fader-track-wrap" id="ft-depth">
+        <div class="fader-track"></div>
+        <div class="fader-fill" id="ff-depth" style="height:50%"></div>
+        <div class="fader-thumb" id="fth-depth"></div>
+      </div>
       <div class="fader-val" id="lfo-depth-val">50%</div>
       <div class="fader-sep">TARGET</div>
       <div class="fader-mini-btns">
@@ -386,8 +266,7 @@ body::after {
 
   </div><!-- /main-body -->
 
-  <!-- VOCODER BAND VISUALIZER -->
-  <div id="voc-strip" style="position:relative">
+  <div id="voc-strip">
     <div id="voc-label">VOCODER BANDS</div>
   </div>
 
@@ -395,117 +274,107 @@ body::after {
 
 <script>
 'use strict';
-/* ═══════════════════════════════════════════════════════════
-   AUDIO ENGINE
-═══════════════════════════════════════════════════════════ */
-let ctx, masterGain, distNode, reverbConvolver, reverbGain, analyser;
-let oscillators = {}, noiseNodes = {};
-let currentWave = 'sine';
 
-// Gyro
-let sBeta=0, sGamma=0, sAlpha=0, lastAcc={x:0,y:0,z:0};
-let distMod=0;
+/* ═══════════════════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════════════════ */
+let ctx, masterGain, distNode, reverbConvolver, reverbGain, analyser;
+let oscillators={}, noiseNodes={};
+let currentWave='sine';
+
+let sBeta=0,sGamma=0,sAlpha=0,lastAcc={x:0,y:0,z:0};
 
 // LFO
-let lfoOsc=null, lfoGainNode=null;
-let lfoOn=false, lfoShape='sine', lfoTarget='pitch', lfoPhase=0;
+let lfoOsc=null,lfoGainNode=null;
+let lfoOn=false,lfoShape='sine',lfoTarget='pitch',lfoPhase=0;
+let lfoRate=1.0, lfoDepth=0.5;
 
 // Vocoder
-let vocActive=false, micStream=null, micSource=null;
-let vocBands=[], vocBandCount=10;
+let vocActive=false,micStream=null,micSource=null;
+let vocBands=[],VOC_N=16;
+let vocSynthBus=null;
 
-// Pad state
-const padState = {};
-
-const NOTES = [
-  {note:'C3',  freq:130.81}, {note:'D3',  freq:146.83}, {note:'E3',  freq:164.81},
-  {note:'F3',  freq:174.61}, {note:'G3',  freq:196.00}, {note:'A3',  freq:220.00},
-  {note:'B3',  freq:246.94}, {note:'C4',  freq:261.63}, {note:'D4',  freq:293.66},
-  {note:'E4',  freq:329.63}, {note:'F4',  freq:349.23}, {note:'G4',  freq:392.00}
+const padState={};
+const NOTES=[
+  {note:'C3',freq:130.81},{note:'D3',freq:146.83},{note:'E3',freq:164.81},
+  {note:'F3',freq:174.61},{note:'G3',freq:196.00},{note:'A3',freq:220.00},
+  {note:'B3',freq:246.94},{note:'C4',freq:261.63},{note:'D4',freq:293.66},
+  {note:'E4',freq:329.63},{note:'F4',freq:349.23},{note:'G4',freq:392.00}
 ];
 
-/* ── init audio ─────────────────────────────────────────── */
-function initAudio() {
-  ctx = new (window.AudioContext || window.webkitAudioContext)();
-
-  analyser = ctx.createAnalyser();
-  analyser.fftSize = 2048;
-
-  masterGain = ctx.createGain();
-  masterGain.gain.value = 0.65;
-
-  distNode = ctx.createWaveShaper();
-  setDistortion(0);
-
-  reverbConvolver = ctx.createConvolver();
-  reverbGain = ctx.createGain();
-  reverbGain.gain.value = 0;
-  reverbConvolver.buffer = makeReverb(2.5);
-
-  // synth chain: osc → dist → master → analyser → out
+/* ═══════════════════════════════════════════════════════
+   AUDIO INIT
+═══════════════════════════════════════════════════════ */
+function initAudio(){
+  ctx=new(window.AudioContext||window.webkitAudioContext)();
+  analyser=ctx.createAnalyser(); analyser.fftSize=2048;
+  masterGain=ctx.createGain(); masterGain.gain.value=0.65;
+  distNode=ctx.createWaveShaper(); setDistortion(0);
+  reverbConvolver=ctx.createConvolver();
+  reverbGain=ctx.createGain(); reverbGain.gain.value=0;
+  reverbConvolver.buffer=makeReverb(2.5);
   distNode.connect(masterGain);
   masterGain.connect(analyser);
   analyser.connect(ctx.destination);
-  // reverb send
   masterGain.connect(reverbConvolver);
   reverbConvolver.connect(reverbGain);
   reverbGain.connect(ctx.destination);
 }
 
-/* ── helpers ─────────────────────────────────────────────── */
-function setDistortion(amount) {
-  const k=amount*400, n=256, c=new Float32Array(n);
-  for(let i=0;i<n;i++){const x=(i*2/n)-1; c[i]=(Math.PI+k)*x/(Math.PI+k*Math.abs(x));}
+function setDistortion(a){
+  const k=a*400,n=256,c=new Float32Array(n);
+  for(let i=0;i<n;i++){const x=(i*2/n)-1;c[i]=(Math.PI+k)*x/(Math.PI+k*Math.abs(x));}
   distNode.curve=c;
 }
-
-function makeReverb(dur) {
-  const sr=ctx.sampleRate, len=sr*dur, buf=ctx.createBuffer(2,len,sr);
-  for(let ch=0;ch<2;ch++){const d=buf.getChannelData(ch); for(let i=0;i<len;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/len,2.5);}
-  return buf;
+function makeReverb(d){
+  const sr=ctx.sampleRate,len=sr*d,b=ctx.createBuffer(2,len,sr);
+  for(let c=0;c<2;c++){const da=b.getChannelData(c);for(let i=0;i<len;i++)da[i]=(Math.random()*2-1)*Math.pow(1-i/len,2.5);}
+  return b;
+}
+function makeNoise(){
+  const b=ctx.createBuffer(1,ctx.sampleRate,ctx.sampleRate),d=b.getChannelData(0);
+  for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1; return b;
 }
 
-function makeNoise() {
-  const buf=ctx.createBuffer(1,ctx.sampleRate,ctx.sampleRate), d=buf.getChannelData(0);
-  for(let i=0;i<d.length;i++) d[i]=Math.random()*2-1; return buf;
-}
-
-/* ── note start / stop ───────────────────────────────────── */
-function startNote(id, freq) {
-  if (oscillators[id]||noiseNodes[id]) return;
-  if (!ctx) return;
-  if (ctx.state==='suspended') ctx.resume();
-
+/* ═══════════════════════════════════════════════════════
+   NOTES
+═══════════════════════════════════════════════════════ */
+function startNote(id,freq){
+  if(oscillators[id]||noiseNodes[id]) return;
+  if(!ctx) return;
+  if(ctx.state==='suspended') ctx.resume();
   const g=ctx.createGain();
   g.gain.setValueAtTime(0,ctx.currentTime);
   g.gain.linearRampToValueAtTime(0.35,ctx.currentTime+.025);
+  // connect to normal synth chain AND vocoder bus if active
   g.connect(distNode);
+  if(vocActive&&vocSynthBus) g.connect(vocSynthBus);
 
-  if (currentWave==='noise') {
-    const src=ctx.createBufferSource(); src.buffer=makeNoise(); src.loop=true;
-    src.connect(g); src.start(); noiseNodes[id]={src,g};
+  if(currentWave==='noise'){
+    const s=ctx.createBufferSource();s.buffer=makeNoise();s.loop=true;s.connect(g);s.start();
+    noiseNodes[id]={src:s,g};
   } else {
     const osc=ctx.createOscillator();
     osc.type=currentWave; osc.frequency.value=freq;
-    if (lfoOn&&lfoGainNode&&(lfoTarget==='pitch'||lfoTarget==='both')) {
-      const pd=ctx.createGain(); pd.gain.value=freq*.07;
-      lfoGainNode.connect(pd); pd.connect(osc.frequency);
+    if(lfoOn&&lfoGainNode&&(lfoTarget==='pitch'||lfoTarget==='both')){
+      const pd=ctx.createGain();pd.gain.value=freq*.07;
+      lfoGainNode.connect(pd);pd.connect(osc.frequency);
     }
-    osc.connect(g); osc.start();
+    osc.connect(g);osc.start();
     oscillators[id]={osc,g,freq};
   }
 }
 
-function stopNote(id) {
-  if (oscillators[id]) {
-    const {osc,g}=oscillators[id];
+function stopNote(id){
+  if(oscillators[id]){
+    const{osc,g}=oscillators[id];
     g.gain.setValueAtTime(g.gain.value,ctx.currentTime);
     g.gain.linearRampToValueAtTime(0,ctx.currentTime+.15);
     setTimeout(()=>{try{osc.stop()}catch(e){}},300);
     delete oscillators[id];
   }
-  if (noiseNodes[id]) {
-    const {src,g}=noiseNodes[id];
+  if(noiseNodes[id]){
+    const{src,g}=noiseNodes[id];
     g.gain.setValueAtTime(g.gain.value,ctx.currentTime);
     g.gain.linearRampToValueAtTime(0,ctx.currentTime+.15);
     setTimeout(()=>{try{src.stop()}catch(e){}},300);
@@ -513,157 +382,236 @@ function stopNote(id) {
   }
 }
 
-/* ═══════════════════════════════════════════════════════════
-   VOCODER
-   Architecture:
-     mic → analyser (for band levels) → N bandpass filters → N gain nodes
-     synth buses also pass through the N same bandpass filters
-     mic band envelope → controls synth band gain
-═══════════════════════════════════════════════════════════ */
-let vocMicAnalyser=null;
-let vocSynthInput=null;   // GainNode that collects all oscillator outputs for vocoder
-let vocBandAnalysers=[];  // AnalyserNode per band on mic path
+/* ═══════════════════════════════════════════════════════
+   VOCODER  — fixed architecture
+   mic → N bandpass → envelope detect → controls N synth band gains
+   synth → N bandpass → N gains → output
+═══════════════════════════════════════════════════════ */
+async function startVocoder(){
+  try{
+    micStream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false},video:false});
+  }catch(e){alert('Mikrofon verweigert.');return;}
+  if(ctx.state==='suspended') ctx.resume();
 
-async function startVocoder() {
-  try {
-    micStream = await navigator.mediaDevices.getUserMedia({audio:true, video:false});
-  } catch(e) {
-    alert('Mikrofon-Zugriff verweigert. Vocoder nicht verfügbar.'); return;
-  }
-  if (ctx.state==='suspended') ctx.resume();
+  micSource=ctx.createMediaStreamSource(micStream);
 
-  // Mic source
-  micSource = ctx.createMediaStreamSource(micStream);
+  // Mic pre-gain (boost mic signal for better envelope detection)
+  const micBoost=ctx.createGain();
+  micBoost.gain.value=8;
+  micSource.connect(micBoost);
 
-  // Synth collection node (receives all oscillators)
-  vocSynthInput = ctx.createGain();
-  vocSynthInput.gain.value = 1.0;
+  // Synth bus — collects all synth output for vocoder processing
+  vocSynthBus=ctx.createGain();
+  vocSynthBus.gain.value=1.0;
 
-  // Frequency bands: log-spaced 80 Hz – 8000 Hz
-  const freqs = [];
-  for (let i=0;i<vocBandCount;i++) {
-    freqs.push(80 * Math.pow(8000/80, i/(vocBandCount-1)));
-  }
+  // Connect already-playing notes to the bus
+  for(const id in oscillators) oscillators[id].g.connect(vocSynthBus);
+  for(const id in noiseNodes)   noiseNodes[id].g.connect(vocSynthBus);
 
-  vocBands = [];
-  for (let i=0;i<vocBandCount;i++) {
-    const f = freqs[i];
-    const Q = 3.0;
+  // Mute the direct master output while vocoder is on
+  masterGain.gain.setTargetAtTime(0.05,ctx.currentTime,0.05);
 
-    // Mic bandpass → envelope follower (analyser)
-    const micBP = ctx.createBiquadFilter();
-    micBP.type='bandpass'; micBP.frequency.value=f; micBP.Q.value=Q;
-    micSource.connect(micBP);
+  // Vocoder output gain
+  const vocOut=ctx.createGain();
+  vocOut.gain.value=3.0;
+  vocOut.connect(ctx.destination);
 
-    const micAna = ctx.createAnalyser();
-    micAna.fftSize=256; micAna.smoothingTimeConstant=0.6;
-    micBP.connect(micAna);
-
-    // Synth bandpass → output via gain controlled by mic envelope
-    const synBP = ctx.createBiquadFilter();
-    synBP.type='bandpass'; synBP.frequency.value=f; synBP.Q.value=Q;
-    vocSynthInput.connect(synBP);
-
-    const synGain = ctx.createGain();
-    synGain.gain.value=0;
-    synBP.connect(synGain);
-    synGain.connect(ctx.destination);  // vocoder output bypasses master (to avoid double)
-
-    vocBands.push({micAna, synGain});
-  }
-
-  // Reroute oscillators into vocoder input
-  // We do this by patching: oscillators already connect to distNode → masterGain
-  // For vocoder we also connect distNode to vocSynthInput
-  distNode.connect(vocSynthInput);
-
-  // Build band viz bars
-  buildVocBars();
-  // Start band update loop
-  vocActive=true;
-  requestAnimationFrame(vocLoop);
-}
-
-function stopVocoder() {
-  vocActive=false;
-  if (micStream) { micStream.getTracks().forEach(t=>t.stop()); micStream=null; }
-  if (micSource) { micSource.disconnect(); micSource=null; }
-  if (vocSynthInput) { try{distNode.disconnect(vocSynthInput)}catch(e){}; vocSynthInput.disconnect(); vocSynthInput=null; }
+  // Log-spaced bands 100Hz – 8000Hz
   vocBands=[];
-  buildVocBars(); // clear bars
+  for(let i=0;i<VOC_N;i++){
+    const f=100*Math.pow(8000/100,i/(VOC_N-1));
+    const Q=4.0;
+
+    // ── MIC BAND ──
+    const mBP=ctx.createBiquadFilter();
+    mBP.type='bandpass';mBP.frequency.value=f;mBP.Q.value=Q;
+    micBoost.connect(mBP);
+
+    // Rectifier + smoother = envelope follower
+    const mWave=ctx.createWaveShaper();
+    const rect=new Float32Array(256);
+    for(let j=0;j<256;j++) rect[j]=Math.abs((j/128)-1); // full-wave rectify
+    mWave.curve=rect;
+    mBP.connect(mWave);
+
+    const mSmooth=ctx.createBiquadFilter();
+    mSmooth.type='lowpass';mSmooth.frequency.value=30; // 30Hz smoothing
+    mWave.connect(mSmooth);
+
+    // ── SYNTH BAND ──
+    const sBP=ctx.createBiquadFilter();
+    sBP.type='bandpass';sBP.frequency.value=f;sBP.Q.value=Q;
+    vocSynthBus.connect(sBP);
+
+    // Gain controlled by mic envelope
+    const sGain=ctx.createGain();
+    sGain.gain.value=0;
+    sBP.connect(sGain);
+    sGain.connect(vocOut);
+
+    // Wire envelope → gain AudioParam
+    // We use a gain-scaled connection: smooth output (range ~0..1) → gain param
+    const envScale=ctx.createGain();
+    envScale.gain.value=6.0; // amplify envelope
+    mSmooth.connect(envScale);
+    envScale.connect(sGain.gain);
+
+    // Analyser for visualisation
+    const ana=ctx.createAnalyser();
+    ana.fftSize=32;ana.smoothingTimeConstant=0.7;
+    mBP.connect(ana);
+
+    vocBands.push({ana,sGain});
+  }
+
+  buildVocBars();
+  vocActive=true;
+  vocLoop();
 }
 
-function vocLoop() {
-  if (!vocActive) return;
+function stopVocoder(){
+  vocActive=false;
+  // Restore master gain
+  if(masterGain) masterGain.gain.setTargetAtTime(0.65,ctx.currentTime,0.05);
+  if(micStream){micStream.getTracks().forEach(t=>t.stop());micStream=null;}
+  if(micSource){try{micSource.disconnect()}catch(e){}micSource=null;}
+  if(vocSynthBus){
+    // Disconnect playing notes from bus
+    for(const id in oscillators) try{oscillators[id].g.disconnect(vocSynthBus)}catch(e){}
+    for(const id in noiseNodes)  try{noiseNodes[id].g.disconnect(vocSynthBus)}catch(e){}
+    try{vocSynthBus.disconnect()}catch(e){}
+    vocSynthBus=null;
+  }
+  vocBands=[];
+  buildVocBars();
+}
+
+function vocLoop(){
+  if(!vocActive) return;
   requestAnimationFrame(vocLoop);
-  const tbuf = new Uint8Array(128);
+  const buf=new Uint8Array(16);
   vocBands.forEach((band,i)=>{
-    band.micAna.getByteFrequencyData(tbuf);
-    // RMS of frequency data as envelope
-    let sum=0; for(let j=0;j<tbuf.length;j++) sum+=tbuf[j]*tbuf[j];
-    const rms = Math.sqrt(sum/tbuf.length)/255;
-    band.synGain.gain.setTargetAtTime(rms*4, ctx.currentTime, 0.02);
-    // Update viz bar
-    const bar=document.getElementById('vband-'+i);
+    band.ana.getByteTimeDomainData(buf);
+    let sum=0;
+    for(let j=0;j<buf.length;j++){const v=(buf[j]-128)/128;sum+=v*v;}
+    const rms=Math.sqrt(sum/buf.length);
+    const bar=document.getElementById('vb'+i);
     if(bar){
-      const h=Math.max(3, rms*120);
-      bar.style.height=h+'px';
-      bar.style.opacity=(0.2+rms*1.5).toFixed(2);
+      const h=Math.max(4,rms*260);
+      bar.style.height=Math.min(h,80)+'px';
+      bar.style.opacity=Math.min(1,(0.15+rms*3)).toFixed(2);
     }
   });
 }
 
-function buildVocBars() {
+function buildVocBars(){
   const strip=document.getElementById('voc-strip');
-  // Remove existing bars
   strip.querySelectorAll('.vband').forEach(b=>b.remove());
-  for(let i=0;i<vocBandCount;i++){
+  for(let i=0;i<VOC_N;i++){
     const b=document.createElement('div');
-    b.className='vband'; b.id='vband-'+i;
+    b.className='vband';b.id='vb'+i;
     strip.appendChild(b);
   }
 }
 
-async function toggleVocoder() {
+async function toggleVocoder(){
   const btn=document.getElementById('voc-btn');
-  if (!vocActive) {
-    await startVocoder();
-    btn.classList.add('on');
-  } else {
-    stopVocoder();
-    btn.classList.remove('on');
-  }
+  if(!vocActive){await startVocoder();btn.classList.add('on');}
+  else{stopVocoder();btn.classList.remove('on');}
 }
 
-/* ═══════════════════════════════════════════════════════════
-   LFO
-═══════════════════════════════════════════════════════════ */
-function buildLFO() {
-  if (lfoOsc){try{lfoOsc.stop()}catch(e){} lfoOsc=null;}
-  if (!lfoOn||!ctx) return;
+/* ═══════════════════════════════════════════════════════
+   CUSTOM VERTICAL FADERS
+═══════════════════════════════════════════════════════ */
+function initFader(trackId,thumbId,fillId,valId,min,max,initVal,onchange){
+  const track=document.getElementById(trackId);
+  const thumb=document.getElementById(thumbId);
+  const fill =document.getElementById(fillId);
+  const valEl=document.getElementById(valId);
+  let dragging=false, startY=0, startPct=0;
 
+  // pct: 0=bottom=min, 1=top=max
+  let pct=(initVal-min)/(max-min);
+
+  function update(newPct){
+    pct=Math.max(0,Math.min(1,newPct));
+    const val=min+pct*(max-min);
+    // thumb position: top of track=pct=1, bottom=pct=0
+    const h=track.offsetHeight;
+    const thumbY=(1-pct)*h; // px from top
+    thumb.style.top=thumbY+'px';
+    fill.style.height=(pct*100)+'%';
+    onchange(val,pct);
+    // display
+    if(max<=1) valEl.textContent=Math.round(pct*100)+'%';
+    else valEl.textContent=val.toFixed(val<10?2:1)+'Hz';
+  }
+
+  // init position
+  requestAnimationFrame(()=>update(pct));
+
+  function getNewPct(clientY){
+    const rect=track.getBoundingClientRect();
+    return 1-(clientY-rect.top)/rect.height;
+  }
+
+  thumb.addEventListener('touchstart',(e)=>{e.preventDefault();e.stopPropagation();dragging=true;thumb.classList.add('dragging');startY=e.touches[0].clientY;startPct=pct;},{passive:false});
+  window.addEventListener('touchmove',(e)=>{
+    if(!dragging) return; e.preventDefault();
+    const rect=track.getBoundingClientRect();
+    const dy=(startY-e.touches[0].clientY)/rect.height;
+    update(startPct+dy);
+  },{passive:false});
+  window.addEventListener('touchend',()=>{dragging=false;thumb.classList.remove('dragging');});
+
+  thumb.addEventListener('mousedown',(e)=>{e.preventDefault();dragging=true;thumb.classList.add('dragging');startY=e.clientY;startPct=pct;});
+  window.addEventListener('mousemove',(e)=>{
+    if(!dragging) return;
+    const rect=track.getBoundingClientRect();
+    const dy=(startY-e.clientY)/rect.height;
+    update(startPct+dy);
+  });
+  window.addEventListener('mouseup',()=>{dragging=false;thumb.classList.remove('dragging');});
+
+  // Click on track itself (not thumb)
+  track.addEventListener('click',(e)=>{
+    if(e.target===thumb) return;
+    update(getNewPct(e.clientY));
+  });
+  track.addEventListener('touchend',(e)=>{
+    if(dragging) return;
+    if(e.target===thumb) return;
+    update(getNewPct(e.changedTouches[0].clientY));
+  },{passive:false});
+}
+
+/* ═══════════════════════════════════════════════════════
+   LFO
+═══════════════════════════════════════════════════════ */
+function buildLFO(){
+  if(lfoOsc){try{lfoOsc.stop()}catch(e){}lfoOsc=null;}
+  if(!lfoOn||!ctx) return;
   lfoOsc=ctx.createOscillator();
   lfoGainNode=ctx.createGain();
   lfoOsc.type=lfoShape;
-  lfoOsc.frequency.value=parseFloat(document.getElementById('lfo-rate').value);
-  lfoGainNode.gain.value=parseFloat(document.getElementById('lfo-depth').value);
+  lfoOsc.frequency.value=lfoRate;
+  lfoGainNode.gain.value=lfoDepth;
   lfoOsc.connect(lfoGainNode);
-
-  if (lfoTarget==='pitch'||lfoTarget==='both') {
+  if(lfoTarget==='pitch'||lfoTarget==='both'){
     for(const id in oscillators){
-      const {osc,freq}=oscillators[id];
-      const pd=ctx.createGain(); pd.gain.value=freq*.07;
-      lfoGainNode.connect(pd); pd.connect(osc.frequency);
+      const{osc,freq}=oscillators[id];
+      const pd=ctx.createGain();pd.gain.value=freq*.07;
+      lfoGainNode.connect(pd);pd.connect(osc.frequency);
     }
   }
-  if (lfoTarget==='amp'||lfoTarget==='both') {
-    const as=ctx.createGain(); as.gain.value=0.25;
-    lfoGainNode.connect(as); as.connect(masterGain.gain);
+  if(lfoTarget==='amp'||lfoTarget==='both'){
+    const as=ctx.createGain();as.gain.value=0.25;
+    lfoGainNode.connect(as);as.connect(masterGain.gain);
   }
   lfoOsc.start();
 }
 
-function toggleLFO() {
+function toggleLFO(){
   lfoOn=!lfoOn;
   const btn=document.getElementById('lfo-master');
   const dot=document.getElementById('lfo-dot');
@@ -674,50 +622,39 @@ function toggleLFO() {
   buildLFO();
 }
 
-function setLFOShape(s) {
+function setLFOShape(s){
   lfoShape=s;
   document.querySelectorAll('.fmb[id^=ls-]').forEach(b=>b.classList.remove('on'));
-  const map={sine:'sin',square:'sqr',triangle:'tri',sawtooth:'saw'};
-  document.getElementById('ls-'+map[s]).classList.add('on');
+  const m={sine:'sin',square:'sqr',triangle:'tri',sawtooth:'saw'};
+  document.getElementById('ls-'+m[s]).classList.add('on');
   document.getElementById('lfo-lbl').textContent=lfoOn?'LFO '+s.toUpperCase():'LFO OFF';
   if(lfoOsc) lfoOsc.type=s;
 }
 
-function setLFOTarget(t) {
+function setLFOTarget(t){
   lfoTarget=t;
   document.querySelectorAll('.fmb[id^=lt-]').forEach(b=>b.classList.remove('on'));
-  const map={pitch:'pit',amp:'amp',both:'bot'};
-  document.getElementById('lt-'+map[t]).classList.add('on');
+  const m={pitch:'pit',amp:'amp',both:'bot'};
+  document.getElementById('lt-'+m[t]).classList.add('on');
   if(lfoOn) buildLFO();
 }
 
-function onFaderInput() {
-  const rate =parseFloat(document.getElementById('lfo-rate').value);
-  const depth=parseFloat(document.getElementById('lfo-depth').value);
-  document.getElementById('lfo-rate-val').textContent =rate.toFixed(2)+'Hz';
-  document.getElementById('lfo-depth-val').textContent=Math.round(depth*100)+'%';
-  if(lfoOsc) lfoOsc.frequency.setTargetAtTime(rate,ctx.currentTime,.05);
-  if(lfoGainNode) lfoGainNode.gain.setTargetAtTime(depth,ctx.currentTime,.05);
-}
-
-/* ═══════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════
    PADS
-═══════════════════════════════════════════════════════════ */
-function buildPads() {
-  const grid=document.getElementById('pads');
-  grid.innerHTML='';
+═══════════════════════════════════════════════════════ */
+function buildPads(){
+  const grid=document.getElementById('pads');grid.innerHTML='';
   NOTES.forEach((n,i)=>{
-    const id='pad-'+i; padState[id]=false;
+    const id='pad-'+i;padState[id]=false;
     const pad=document.createElement('div');
-    pad.className='pad'; pad.id=id;
+    pad.className='pad';pad.id=id;
     pad.innerHTML=`<div class="pad-led"></div><div class="pad-note">${n.note}</div><div class="pad-freq">${n.freq}Hz</div>`;
-
     const toggle=(e)=>{
       e.preventDefault();
-      pad.classList.remove('tap'); void pad.offsetWidth; pad.classList.add('tap');
+      pad.classList.remove('tap');void pad.offsetWidth;pad.classList.add('tap');
       padState[id]=!padState[id];
-      if(padState[id]){ startNote(id,n.freq); pad.classList.add('on'); }
-      else { stopNote(id); pad.classList.remove('on'); }
+      if(padState[id]){startNote(id,n.freq);pad.classList.add('on');}
+      else{stopNote(id);pad.classList.remove('on');}
     };
     pad.addEventListener('touchend',toggle,{passive:false});
     pad.addEventListener('click',toggle);
@@ -725,39 +662,31 @@ function buildPads() {
   });
 }
 
-/* ═══════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════
    GYRO
-═══════════════════════════════════════════════════════════ */
-function initGyro() {
+═══════════════════════════════════════════════════════ */
+function initGyro(){
   window.addEventListener('deviceorientation',(e)=>{
-    sBeta  +=(( e.beta ||0)-sBeta )*0.15;
-    sGamma +=(( e.gamma||0)-sGamma)*0.15;
-    sAlpha +=(( e.alpha||0)-sAlpha)*0.05;
-
-    const pitchBend=Math.max(-90,Math.min(90,sBeta));
-    const pitchMult=Math.pow(2,pitchBend/90);
-    const ampMod   =Math.max(.05,Math.min(1,(sGamma+90)/180));
-    distMod        =Math.min(1,Math.abs(sAlpha-180)/180);
-
-    for(const id in oscillators){
-      const {osc,g,freq}=oscillators[id];
-      osc.frequency.setTargetAtTime(freq*pitchMult,ctx.currentTime,.05);
-      g.gain.setTargetAtTime(ampMod*.4,ctx.currentTime,.05);
-    }
-    for(const id in noiseNodes) noiseNodes[id].g.gain.setTargetAtTime(ampMod*.35,ctx.currentTime,.05);
-    setDistortion(distMod);
-    masterGain.gain.setTargetAtTime(.35+ampMod*.65,ctx.currentTime,.05);
-
-    document.getElementById('gv-p').textContent=pitchBend.toFixed(1)+'°';
+    sBeta+=((e.beta||0)-sBeta)*.15;
+    sGamma+=((e.gamma||0)-sGamma)*.15;
+    sAlpha+=((e.alpha||0)-sAlpha)*.05;
+    const pb=Math.max(-90,Math.min(90,sBeta));
+    const pm=Math.pow(2,pb/90);
+    const am=Math.max(.05,Math.min(1,(sGamma+90)/180));
+    const dm=Math.min(1,Math.abs(sAlpha-180)/180);
+    for(const id in oscillators){const{osc,g,freq}=oscillators[id];osc.frequency.setTargetAtTime(freq*pm,ctx.currentTime,.05);g.gain.setTargetAtTime(am*.4,ctx.currentTime,.05);}
+    for(const id in noiseNodes) noiseNodes[id].g.gain.setTargetAtTime(am*.35,ctx.currentTime,.05);
+    setDistortion(dm);
+    if(!vocActive) masterGain.gain.setTargetAtTime(.35+am*.65,ctx.currentTime,.05);
+    document.getElementById('gv-p').textContent=pb.toFixed(1)+'°';
     document.getElementById('gv-a').textContent=sGamma.toFixed(1)+'°';
-    document.getElementById('gv-d').textContent=distMod.toFixed(2);
-    document.getElementById('gb-p').style.width=((pitchBend+90)/180*100).toFixed(0)+'%';
+    document.getElementById('gv-d').textContent=dm.toFixed(2);
+    document.getElementById('gb-p').style.width=((pb+90)/180*100).toFixed(0)+'%';
     document.getElementById('gb-a').style.width=((sGamma+90)/180*100).toFixed(0)+'%';
-    document.getElementById('gb-d').style.width=(distMod*100).toFixed(0)+'%';
+    document.getElementById('gb-d').style.width=(dm*100).toFixed(0)+'%';
   });
-
   window.addEventListener('devicemotion',(e)=>{
-    const acc=e.accelerationIncludingGravity; if(!acc) return;
+    const acc=e.accelerationIncludingGravity;if(!acc)return;
     const shake=Math.abs(acc.x-lastAcc.x)+Math.abs(acc.y-lastAcc.y)+Math.abs(acc.z-lastAcc.z);
     lastAcc={x:acc.x,y:acc.y,z:acc.z};
     if(shake>8){
@@ -766,85 +695,66 @@ function initGyro() {
       document.getElementById('gv-r').textContent=sm.toFixed(2);
       document.getElementById('gb-r').style.width=(sm*100)+'%';
       document.getElementById('shake-flash').classList.add('active');
-      setTimeout(()=>{
-        document.getElementById('shake-flash').classList.remove('active');
-        reverbGain.gain.setTargetAtTime(0,ctx.currentTime,.6);
-        document.getElementById('gv-r').textContent='0.00';
-        document.getElementById('gb-r').style.width='0%';
-      },350);
+      setTimeout(()=>{document.getElementById('shake-flash').classList.remove('active');reverbGain.gain.setTargetAtTime(0,ctx.currentTime,.6);document.getElementById('gv-r').textContent='0.00';document.getElementById('gb-r').style.width='0%';},350);
     }
   });
 }
 
-/* ═══════════════════════════════════════════════════════════
-   OSCILLOSCOPE
-═══════════════════════════════════════════════════════════ */
-function startScope() {
-  const cv=document.getElementById('scope'), cc=cv.getContext('2d');
+/* ═══════════════════════════════════════════════════════
+   SCOPE
+═══════════════════════════════════════════════════════ */
+function startScope(){
+  const cv=document.getElementById('scope'),cc=cv.getContext('2d');
   const draw=()=>{
     requestAnimationFrame(draw);
-    cv.width=cv.offsetWidth; cv.height=cv.offsetHeight;
+    cv.width=cv.offsetWidth;cv.height=cv.offsetHeight;
     const W=cv.width,H=cv.height;
     cc.clearRect(0,0,W,H);
-    // grid
-    cc.strokeStyle='rgba(0,255,231,.05)'; cc.lineWidth=1;
+    cc.strokeStyle='rgba(0,255,231,.05)';cc.lineWidth=1;
     for(let x=0;x<W;x+=36){cc.beginPath();cc.moveTo(x,0);cc.lineTo(x,H);cc.stroke();}
     for(let y=0;y<H;y+=36){cc.beginPath();cc.moveTo(0,y);cc.lineTo(W,y);cc.stroke();}
-    cc.strokeStyle='rgba(0,255,231,.12)';
-    cc.beginPath();cc.moveTo(0,H/2);cc.lineTo(W,H/2);cc.stroke();
-    if(!analyser) return;
-    // waveform
+    cc.strokeStyle='rgba(0,255,231,.12)';cc.beginPath();cc.moveTo(0,H/2);cc.lineTo(W,H/2);cc.stroke();
+    if(!analyser)return;
     const buf=new Float32Array(analyser.fftSize);
     analyser.getFloatTimeDomainData(buf);
-    cc.beginPath(); cc.strokeStyle='#00ffe7'; cc.lineWidth=2;
-    cc.shadowColor='#00ffe7'; cc.shadowBlur=7;
-    const sw=W/buf.length; let xi=0;
-    for(let i=0;i<buf.length;i++){
-      const y=H/2+buf[i]*H/2*.85;
-      i===0?cc.moveTo(xi,y):cc.lineTo(xi,y); xi+=sw;
-    }
-    cc.stroke(); cc.shadowBlur=0;
-    // LFO overlay
+    cc.beginPath();cc.strokeStyle='#00ffe7';cc.lineWidth=2;cc.shadowColor='#00ffe7';cc.shadowBlur=7;
+    const sw=W/buf.length;let xi=0;
+    for(let i=0;i<buf.length;i++){const y=H/2+buf[i]*H/2*.85;i===0?cc.moveTo(xi,y):cc.lineTo(xi,y);xi+=sw;}
+    cc.stroke();cc.shadowBlur=0;
     if(lfoOn){
-      const rate=parseFloat(document.getElementById('lfo-rate').value);
-      const depth=parseFloat(document.getElementById('lfo-depth').value);
-      lfoPhase+=rate*.04;
-      cc.beginPath(); cc.strokeStyle='rgba(123,47,255,.5)'; cc.lineWidth=1.5;
-      cc.shadowColor='#7b2fff'; cc.shadowBlur=5;
+      lfoPhase+=lfoRate*.04;
+      cc.beginPath();cc.strokeStyle='rgba(123,47,255,.5)';cc.lineWidth=1.5;cc.shadowColor='#7b2fff';cc.shadowBlur=5;
       for(let i=0;i<W;i++){
-        const t=(i/W)*rate*Math.PI*2+lfoPhase; let v=0;
-        if(lfoShape==='sine')     v=Math.sin(t);
-        else if(lfoShape==='square')   v=Math.sign(Math.sin(t));
-        else if(lfoShape==='triangle') v=2/Math.PI*Math.asin(Math.sin(t));
+        const t=(i/W)*lfoRate*Math.PI*2+lfoPhase;let v=0;
+        if(lfoShape==='sine')v=Math.sin(t);
+        else if(lfoShape==='square')v=Math.sign(Math.sin(t));
+        else if(lfoShape==='triangle')v=2/Math.PI*Math.asin(Math.sin(t));
         else v=((t/(Math.PI*2))%1)*2-1;
-        const y=H/2+v*depth*(H/3.2);
+        const y=H/2+v*lfoDepth*(H/3.2);
         i===0?cc.moveTo(i,y):cc.lineTo(i,y);
       }
-      cc.stroke(); cc.shadowBlur=0;
+      cc.stroke();cc.shadowBlur=0;
     }
   };
   draw();
 }
 
-/* ═══════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════
    WAVE
-═══════════════════════════════════════════════════════════ */
-function setWave(w) {
+═══════════════════════════════════════════════════════ */
+function setWave(w){
   currentWave=w;
   document.querySelectorAll('.wbtn').forEach(b=>b.classList.remove('on'));
   document.getElementById('w-'+w).classList.add('on');
   for(const id in oscillators) if(oscillators[id].osc) oscillators[id].osc.type=w;
 }
 
-/* ═══════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════
    INIT
-═══════════════════════════════════════════════════════════ */
-document.getElementById('start-btn').addEventListener('click', async ()=>{
-  // Gyro permission (iOS 13+)
-  for(const EV of [window.DeviceOrientationEvent, window.DeviceMotionEvent]){
-    if(EV&&typeof EV.requestPermission==='function'){
-      try{ await EV.requestPermission(); }catch(e){}
-    }
+═══════════════════════════════════════════════════════ */
+document.getElementById('start-btn').addEventListener('click',async()=>{
+  for(const EV of[window.DeviceOrientationEvent,window.DeviceMotionEvent]){
+    if(EV&&typeof EV.requestPermission==='function'){try{await EV.requestPermission();}catch(e){}}
   }
   document.getElementById('perm').style.display='none';
   document.getElementById('app').style.display='flex';
@@ -853,6 +763,24 @@ document.getElementById('start-btn').addEventListener('click', async ()=>{
   buildVocBars();
   initGyro();
   startScope();
+
+  // Init custom faders (must be after layout is visible)
+  requestAnimationFrame(()=>{
+    initFader('ft-rate','fth-rate','ff-rate','lfo-rate-val',
+      0.05,20,1.0,
+      (val)=>{
+        lfoRate=val;
+        if(lfoOsc) lfoOsc.frequency.setTargetAtTime(val,ctx.currentTime,.05);
+      }
+    );
+    initFader('ft-depth','fth-depth','ff-depth','lfo-depth-val',
+      0,1,0.5,
+      (val)=>{
+        lfoDepth=val;
+        if(lfoGainNode) lfoGainNode.gain.setTargetAtTime(val,ctx.currentTime,.05);
+      }
+    );
+  });
 });
 </script>
 </body>
